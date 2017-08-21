@@ -1,0 +1,24 @@
+{
+  "name": "meeteux-god",
+  "version": "1.0.0",
+  "description": "MEETeUX",
+  "main": "index.js",
+  "scripts": {
+    "tsc": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fhstp/meeteux-god.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fhstp/meeteux-god/issues"
+  },
+  "homepage": "https://github.com/fhstp/meeteux-god#readme",
+  "devDependencies": {
+    "@types/node": "^8.0.24",
+    "typescript": "^2.4.2"
+  }
+}
