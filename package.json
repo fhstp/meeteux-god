@@ -2,9 +2,12 @@
   "name": "meeteux-god",
   "version": "1.0.0",
   "description": "MEETeUX",
-  "main": "index.js",
+  "main": "dir/index",
+  "types": "dir/index",
   "scripts": {
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "start": "npm run build:live",
+    "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- src/index.ts"
   },
   "repository": {
     "type": "git",
@@ -19,6 +22,10 @@
   "homepage": "https://github.com/fhstp/meeteux-god#readme",
   "devDependencies": {
     "@types/node": "^8.0.24",
-    "typescript": "^2.4.2"
-  }
+    "nodemon": "^1.11.0",
+    "ts-node": "^3.3.0",
+    "typescript": "^2.4.2",
+    "typescript-eslint-parser": "^6.0.1"
+  },
+  "dependencies": {}
 }
