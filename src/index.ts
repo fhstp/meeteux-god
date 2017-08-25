@@ -1,1 +1,4 @@
-console.log("Hello World");
+import Server from './config/server';
+
+
+let server = new Server();

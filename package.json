@@ -6,7 +6,7 @@
   "types": "dir/index",
   "scripts": {
     "tsc": "tsc",
-    "start": "npm run build:live",
+    "start": "NODE_PATH=/var/www/meeteux-god npm run build:live",
     "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- src/index.ts"
   },
   "repository": {
@@ -14,7 +14,7 @@
     "url": "git+https://github.com/fhstp/meeteux-god.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Niklas Thür",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/fhstp/meeteux-god/issues"
@@ -27,5 +27,9 @@
     "typescript": "^2.4.2",
     "typescript-eslint-parser": "^6.0.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "express": "^4.15.4",
+    "sequelize": "^4.7.3",
+    "socket.io": "^2.0.3"
+  }
 }
