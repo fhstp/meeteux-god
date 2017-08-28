@@ -1,4 +1,5 @@
 import * as Sequelize from 'sequelize';
+require('dotenv').config();
 
 export class Connection
 {
@@ -8,7 +9,10 @@ export class Connection
 
     private constructor()
     {
-        this.sequelize = new Sequelize('database', 'username', 'password');
+        this.sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+            host: 'localhost',
+            dialect: 'mysql',
+        });
         this.initDatabase();
 
         this.sequelize.sync();
@@ -28,6 +32,6 @@ export class Connection
     {
         this.user = this.sequelize.define('user', {
             username: Sequelize.STRING,
-        })
+        });
     }
 }

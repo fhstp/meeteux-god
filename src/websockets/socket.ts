@@ -1,12 +1,15 @@
 import * as IO from 'socket.io';
+import  { Connection } from '../database';
 
 export class WebSocket
 {
-    private socket: any
+    private socket: any;
+    private database: any;
 
     constructor(server: any)
     {
         this.socket = new IO(server);
+        this.database = Connection.getInstance();
 
         this.attachListeners();
     }

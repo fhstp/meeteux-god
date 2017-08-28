@@ -1,12 +1,12 @@
 import * as Express from 'express';
 import * as http from 'http';
-require('dotenv').config();
 import  { WebSocket } from '../websockets';
+require('dotenv').config();
 
 export default class Server
 {
     private server: any;
-    private socket: any;
+    private socket: WebSocket;
     private app: any;
 
     constructor()
@@ -15,7 +15,7 @@ export default class Server
         this.server = new http.Server(this.app);
         this.socket = new WebSocket(this.server);
 
-        this.server.listen(3000);
+        this.server.listen(process.env.SERVER_PORT);
 
         //this.app.get('/', function (req, res)
         //{

@@ -1,9 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Sequelize = require("sequelize");
+require('dotenv').config();
 class Connection {
     constructor() {
-        this.sequelize = new Sequelize('database', 'username', 'password');
+        this.sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+            host: 'localhost',
+            dialect: 'mysql',
+        });
         this.initDatabase();
         this.sequelize.sync();
     }
