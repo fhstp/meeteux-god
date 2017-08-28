@@ -1,5 +1,6 @@
 import * as Express from 'express';
 import * as http from 'http';
+require('dotenv').config();
 import  { WebSocket } from '../websockets';
 
 export default class Server
@@ -18,6 +19,7 @@ export default class Server
 
         this.app.get('/', function (req, res)
         {
+            //console.log(process.env.NODE_PATH);
             res.sendFile(process.env.NODE_PATH + '/assets/index.html');
         });
     }
