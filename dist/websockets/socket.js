@@ -1,9 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const IO = require("socket.io");
+const database_1 = require("../database");
 class WebSocket {
     constructor(server) {
         this.socket = new IO(server);
+        this.database = database_1.Connection.getInstance();
         this.attachListeners();
     }
     attachListeners() {
