@@ -32,6 +32,7 @@ export class Connection
     {
         this.user = this.sequelize.define('user', {
             username: Sequelize.STRING,
+            password: Sequelize.STRING,
         });
     }
 }
