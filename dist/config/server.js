@@ -8,7 +8,7 @@ class Server {
         this.app = new Express();
         this.server = new http.Server(this.app);
         this.socket = new websockets_1.WebSocket(this.server);
-        this.server.listen(80);
+        this.server.listen(3000);
         this.app.get('/', function (req, res) {
             res.sendFile(process.env.NODE_PATH + '/assets/index.html');
         });

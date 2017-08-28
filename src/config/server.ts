@@ -14,7 +14,7 @@ export default class Server
         this.server = new http.Server(this.app);
         this.socket = new WebSocket(this.server);
 
-        this.server.listen(80);
+        this.server.listen(3000);
 
         this.app.get('/', function (req, res)
         {
