@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Tach</h1>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+<script>
+    var socket = io.connect('http://god.meeteux.fhstp.ac.at');
+    socket.on('news', function (data) {
+        console.log(data);
+        socket.emit('registerOD', 'Markus');
+    });
+</script>
+</body>
+</html>
