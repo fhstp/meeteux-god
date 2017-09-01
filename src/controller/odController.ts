@@ -10,12 +10,14 @@ export class OdController
         this.database = Connection.getInstance();
     }
 
-    public registerOD(identifier: string): void
+    public registerOD(identifier: string): any
     {
         this.database.user.create({
             name: identifier,
             deviceAddress: 'not known',
             ipAddress: 'not known'
         });
+
+        return this.database.location.findAll();
     }
 }

@@ -1,17 +1,19 @@
 import * as IO from 'socket.io';
 import  { Connection } from '../database';
-import { OdController } from "../controller";
+import { OdController, LocationController } from "../controller";
 
 export class WebSocket
 {
     private socket: any;
     private database: any;
     private odController: OdController;
+    private locationController: LocationController;
 
     constructor(server: any)
     {
         this.socket = new IO(server);
         this.odController = new OdController();
+        this.locationController = new LocationController();
         this.database = Connection.getInstance();
 
         this.attachListeners();
@@ -22,11 +24,17 @@ export class WebSocket
         this.socket.on('connection', (socket) =>
         {
             socket.emit('news', { hello: 'world' });
-            socket.on('my other event', function (data) {
-                console.log(data);
-            });
+
             socket.on('registerOD', (data) => {
-                this.odController.registerOD(data);
+                this.odController.registerOD(data).then( (lookupTable) => {
+                    socket.emit('registerODResult', lookupTable);
+                });
+            });
+
+            socket.on('registerLocation', (data) => {
+                this.locationController.registerLocation(data).then( (message) => {
+                    socket.emit('registerLocationResult', message);
+                });
             });
         });
     }

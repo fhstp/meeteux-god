@@ -2,5 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var odController_1 = require("./odController");
 exports.OdController = odController_1.OdController;
-//export { LocationController } from './odController'; 
+var locationController_1 = require("./locationController");
+exports.LocationController = locationController_1.LocationController;
 //# sourceMappingURL=index.js.map

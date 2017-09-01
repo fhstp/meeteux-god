@@ -49,7 +49,7 @@ export class Connection
                contentURL: 'http://www.google.at',
                ipAddress: '192.168.0.112',
                 locationTypeId: 1,
-                contenttypeId: 1,
+                contentTypeId: 1,
                 statusId: 1,
                 positionId: 1
             });
@@ -58,9 +58,13 @@ export class Connection
                 contentURL: 'http://www.kurier.at',
                 ipAddress: '192.168.0.225',
                 locationTypeId: 1,
-                contenttypeId: 1,
+                contentTypeId: 1,
                 statusId: 1,
                 positionId: 1
+            });
+
+            this._activityType.create({
+               description: 'atLocation'
             });
         });
         // this._sequelize.sync();

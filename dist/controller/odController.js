@@ -11,6 +11,7 @@ class OdController {
             deviceAddress: 'not known',
             ipAddress: 'not known'
         });
+        return this.database.location.findAll();
     }
 }
 exports.OdController = OdController;

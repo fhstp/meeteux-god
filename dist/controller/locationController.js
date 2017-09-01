@@ -6,13 +6,21 @@ class LocationController {
         this.database = database_1.Connection.getInstance();
     }
     registerLocation(data) {
-        const user = 0;
-        const location = 0;
-        const type = 0;
-        this.database.activity.create({
-            name: '',
-            deviceAddress: 'not known',
-            ipAddress: 'not known'
+        const user = data.user;
+        const location = data.location;
+        const type = data.type;
+        let message = "SUCCESS";
+        return this.database.activity.create({
+            userId: user,
+            locationId: location,
+            activityTypeId: type,
+            timestamp: Date.now()
+        }).then(() => {
+            return message;
+        }).catch((err) => {
+            message = "FAILED";
+            //console.log(err);
+            return message;
         });
     }
 }
