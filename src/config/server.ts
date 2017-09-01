@@ -15,12 +15,13 @@ export default class Server
         this.server = new http.Server(this.app);
         this.socket = new WebSocket(this.server);
 
+        console.log('Server runs on Port: ' + process.env.SERVER_PORT);
         this.server.listen(process.env.SERVER_PORT);
 
         //this.app.get('/', function (req, res)
         //{
             //console.log(process.env.NODE_PATH);
-           // res.sendFile(process.env.NODE_PATH + '/assets/index.html');
+           // res.sendFile(process.env.NODE_PATH + '/assets/localIndex.html');
         //});
     }
 }
