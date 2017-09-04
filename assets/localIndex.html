@@ -14,7 +14,7 @@
     socket.on('news', function (data) {
         console.log(data);
         socket.emit('registerOD', 'Niklas');
-        socket.emit('registerLocation', {user: 1, location: 1, type: 1});
+        socket.emit('registerLocation', {user: 1, location: 10});
 
         socket.on('registerODResult', function (data) {
             console.log(data);

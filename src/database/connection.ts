@@ -13,7 +13,6 @@ export class Connection
     private _status: any;
     private _position: any;
     private _activity: any;
-    private _activityType: any;
     private _neighbor:any;
 
     private constructor()
@@ -46,6 +45,8 @@ export class Connection
             });
 
             this._location.create({
+                id: 100,
+                description: 'Kerstin onExhibit',
                contentURL: 'http://www.google.at',
                ipAddress: '192.168.0.112',
                 locationTypeId: 1,
@@ -55,16 +56,58 @@ export class Connection
             });
 
             this._location.create({
-                contentURL: 'http://www.kurier.at',
-                ipAddress: '192.168.0.225',
+                id: 101,
+                description: 'Kerstin atExhibit',
+                contentURL: 'http://www.google.at',
+                ipAddress: '192.168.0.113',
                 locationTypeId: 1,
                 contentTypeId: 1,
                 statusId: 1,
                 positionId: 1
             });
 
-            this._activityType.create({
-               description: 'atLocation'
+            this._location.create({
+                id: 1000,
+                description: 'Flo atExhibit',
+                contentURL: 'http://www.google.at',
+                ipAddress: '192.168.0.114',
+                locationTypeId: 1,
+                contentTypeId: 1,
+                statusId: 1,
+                positionId: 1
+            });
+
+            this._location.create({
+                id: 1001,
+                description: 'Drucker atExhibit',
+                contentURL: 'http://www.google.at',
+                ipAddress: '192.168.0.115',
+                locationTypeId: 1,
+                contentTypeId: 1,
+                statusId: 1,
+                positionId: 1
+            });
+
+            this._location.create({
+                id: 1002,
+                description: 'Stud-Assi atExhibit',
+                contentURL: 'http://www.google.at',
+                ipAddress: '192.168.0.116',
+                locationTypeId: 1,
+                contentTypeId: 1,
+                statusId: 1,
+                positionId: 1
+            });
+
+            this._location.create({
+                id: 10,
+                description: 'Door',
+                contentURL: 'http://www.google.at',
+                ipAddress: '192.168.0.117',
+                locationTypeId: 1,
+                contentTypeId: 1,
+                statusId: 1,
+                positionId: 1
             });
         });
         // this._sequelize.sync();
@@ -91,11 +134,6 @@ export class Connection
         this._activity.belongsTo(this._user, {foreignKey: {allowNull: false}});
         this._location.hasMany(this._activity, {onDelete: 'cascade', foreignKey: {allowNull: false}});
         this._activity.belongsTo(this._location, {foreignKey: {allowNull: false}});
-
-
-        // //_activity to activitytype relation (1:n)
-        this._activityType.hasMany(this._activity, {onDelete: 'cascade', foreignKey: {allowNull: false}});
-        this._activity.belongsTo(this._activityType, {foreignKey: {allowNull: false}});
 
         //_location to _location relation (1:n)
         this._location.hasMany(this._location, {onDelete: 'cascade', foreignKey: {
@@ -184,6 +222,11 @@ export class Connection
         })
 
         this._location = this._sequelize.define('location', {
+            id: {
+                type: Sequelize.INTEGER,
+                primaryKey: true,
+                autoIncrement: false
+            },
             contentURL: {
                type: Sequelize.STRING
             },
@@ -193,6 +236,10 @@ export class Connection
             },
             ipAddress: {
                type: Sequelize.STRING,
+                allowNull: false
+            },
+            description: {
+                type: Sequelize.STRING,
                 allowNull: false
             }
         });
@@ -250,13 +297,6 @@ export class Connection
                 allowNull: false
             }
         });
-
-        this._activityType = this._sequelize.define('activityType', {
-            description: {
-                type: Sequelize.STRING,
-                allowNull: false
-            }
-        });
     }
 
     get activity(): any {
@@ -289,10 +329,6 @@ export class Connection
 
     get position(): any {
         return this._position;
-    }
-
-    get activityType(): any {
-        return this._activityType;
     }
 
     get neighbor(): any {
