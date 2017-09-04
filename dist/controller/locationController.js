@@ -8,12 +8,10 @@ class LocationController {
     registerLocation(data) {
         const user = data.user;
         const location = data.location;
-        const type = data.type;
         let message = "SUCCESS";
         return this.database.activity.create({
             userId: user,
             locationId: location,
-            activityTypeId: type,
             timestamp: Date.now()
         }).then(() => {
             return message;

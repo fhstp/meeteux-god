@@ -14,14 +14,12 @@ export class LocationController
     {
         const user: number = data.user;
         const location: number = data.location;
-        const type: number = data.type;
 
         let message: string = "SUCCESS";
 
         return this.database.activity.create({
             userId: user,
             locationId: location,
-            activityTypeId: type,
             timestamp: Date.now()
         }).then( () => {
             return message;
