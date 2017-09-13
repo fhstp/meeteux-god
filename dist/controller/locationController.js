@@ -8,17 +8,15 @@ class LocationController {
     registerLocation(data) {
         const user = data.user;
         const location = data.location;
-        let message = "SUCCESS";
         return this.database.activity.create({
             userId: user,
             locationId: location,
             timestamp: Date.now()
         }).then(() => {
-            return message;
+            return location;
         }).catch((err) => {
-            message = "FAILED";
             //console.log(err);
-            return message;
+            return "FAILED";
         });
     }
 }

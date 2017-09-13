@@ -26,8 +26,8 @@ export class WebSocket
             socket.emit('news', { hello: 'world' });
 
             socket.on('registerOD', (data) => {
-                this.odController.registerOD(data).then( (lookupTable) => {
-                    socket.emit('registerODResult', lookupTable);
+                this.odController.registerOD(data).then( (values) => {
+                    socket.emit('registerODResult', values);
                 });
             });
 

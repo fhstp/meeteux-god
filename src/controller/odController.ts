@@ -12,12 +12,17 @@ export class OdController
 
     public registerOD(identifier: string): any
     {
-        this.database.user.create({
+        return this.database.user.create({
             name: identifier,
             deviceAddress: 'not known',
             ipAddress: 'not known'
+        }).then( (user) => {
+            return this.database.location.findAll().then( (locations) => {
+                return {user, locations};
+            });
+        }).catch((err) => {
+            //console.log(err);
+            return "FAILED";
         });
-
-        return this.database.location.findAll();
     }
 }
