@@ -36,6 +36,13 @@ export class WebSocket
                     socket.emit('registerLocationResult', message);
                 });
             });
+
+            socket.on('checkLocationStatus', (data) => {
+               this.locationController.checkLocationStatus(data).then( (message) =>
+               {
+                  socket.emit('checkLocationStatusResult', message);
+               });
+            });
         });
     }
 }

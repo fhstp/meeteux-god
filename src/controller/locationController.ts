@@ -27,4 +27,24 @@ export class LocationController
         });
 
     }
+
+    public checkLocationStatus(locationId: number): any
+    {
+        let status: String = "OCCUPIED";
+        return this.database.user.findById(locationId).then( (location) =>
+        {
+            //TODO: check status of location
+
+            if(location.locationType != 3)
+                status = "NOT ACTIVE EXHIBIT";
+
+            if(location.currentSeat < location.maxSeat)
+                status = "FREE";
+
+            return status;
+        }).catch((err) => {
+            //console.log(err);
+            return "FAILED";
+        });
+    }
 }

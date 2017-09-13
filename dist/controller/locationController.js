@@ -19,6 +19,20 @@ class LocationController {
             return "FAILED";
         });
     }
+    checkLocationStatus(locationId) {
+        let status = "OCCUPIED";
+        return this.database.user.findById(locationId).then((location) => {
+            //TODO: check status of location
+            if (location.locationType != 3)
+                status = "NOT ACTIVE EXHIBIT";
+            if (location.currentSeat < location.maxSeat)
+                status = "FREE";
+            return status;
+        }).catch((err) => {
+            //console.log(err);
+            return "FAILED";
+        });
+    }
 }
 exports.LocationController = LocationController;
 //# sourceMappingURL=locationController.js.map
