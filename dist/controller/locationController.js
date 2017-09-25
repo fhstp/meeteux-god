@@ -8,17 +8,29 @@ class LocationController {
     registerLocation(data) {
         const user = data.user;
         const location = data.location;
-        let message = "SUCCESS";
         return this.database.activity.create({
             userId: user,
             locationId: location,
             timestamp: Date.now()
         }).then(() => {
-            return message;
+            return location;
         }).catch((err) => {
-            message = "FAILED";
             //console.log(err);
-            return message;
+            return "FAILED";
+        });
+    }
+    checkLocationStatus(locationId) {
+        let status = "OCCUPIED";
+        return this.database.user.findById(locationId).then((location) => {
+            //TODO: check status of location
+            if (location.locationType != 3)
+                status = "NOT ACTIVE EXHIBIT";
+            if (location.currentSeat < location.maxSeat)
+                status = "FREE";
+            return status;
+        }).catch((err) => {
+            //console.log(err);
+            return "FAILED";
         });
     }
 }

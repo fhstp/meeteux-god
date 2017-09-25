@@ -30,6 +30,22 @@ export class Connection
                 description: 'room'
             });
 
+            this._locationType.create({
+                description: 'activeExhibitOn'
+            });
+
+            this._locationType.create({
+                description: 'activeExhibitAt'
+            });
+
+            this._locationType.create({
+                description: 'passiveExhibit'
+            });
+
+            this._locationType.create({
+                description: 'door'
+            });
+
             this._contentType.create({
                 description: 'webContent'
             });
@@ -43,74 +59,92 @@ export class Connection
                 latitude: 25,
                 floor: 1
             });
-
-            this._location.create({
-                id: 100,
-                description: 'Kerstin onExhibit',
-               contentURL: 'http://www.google.at',
-               ipAddress: '192.168.0.112',
-                locationTypeId: 1,
-                contentTypeId: 1,
-                statusId: 1,
-                positionId: 1
-            });
-
-            this._location.create({
-                id: 101,
-                description: 'Kerstin atExhibit',
-                contentURL: 'http://www.google.at',
-                ipAddress: '192.168.0.113',
-                locationTypeId: 1,
-                contentTypeId: 1,
-                statusId: 1,
-                positionId: 1
-            });
-
-            this._location.create({
-                id: 1000,
-                description: 'Flo atExhibit',
-                contentURL: 'http://www.google.at',
-                ipAddress: '192.168.0.114',
-                locationTypeId: 1,
-                contentTypeId: 1,
-                statusId: 1,
-                positionId: 1
-            });
-
-            this._location.create({
-                id: 1001,
-                description: 'Drucker atExhibit',
-                contentURL: 'http://www.google.at',
-                ipAddress: '192.168.0.115',
-                locationTypeId: 1,
-                contentTypeId: 1,
-                statusId: 1,
-                positionId: 1
-            });
-
-            this._location.create({
-                id: 1002,
-                description: 'Stud-Assi atExhibit',
-                contentURL: 'http://www.google.at',
-                ipAddress: '192.168.0.116',
-                locationTypeId: 1,
-                contentTypeId: 1,
-                statusId: 1,
-                positionId: 1
-            });
-
-            this._location.create({
+        }).then( () => {
+            this.location.create({
                 id: 10,
-                description: 'Door',
-                contentURL: 'http://www.google.at',
-                ipAddress: '192.168.0.117',
+                description: 'Büro',
                 locationTypeId: 1,
-                contentTypeId: 1,
                 statusId: 1,
-                positionId: 1
+                positionId: 1,
+                ipAddress: '0.0.0.0'
+            }).then ( () => {
+                this._location.create({
+                    id: 101,
+                    parentId: 10,
+                    description: 'Kerstin atExhibit',
+                    contentURL: 'http://www.google.at',
+                    ipAddress: '192.168.0.113',
+                    locationTypeId: 3,
+                    contentTypeId: 1,
+                    statusId: 1,
+                    positionId: 1,
+                    currentSeat: 0,
+                    maxSeat: 2
+                }).then( () => {
+                    this._location.create({
+                        id: 100,
+                        description: 'Kerstin onExhibit',
+                        parentId:101,
+                        contentURL: 'http://www.google.at',
+                        ipAddress: '192.168.0.112',
+                        locationTypeId: 2,
+                        contentTypeId: 1,
+                        statusId: 1,
+                        positionId: 1
+                    });
+                });
+
+                this._location.create({
+                    id: 1000,
+                    parentId: 10,
+                    description: 'Flo atExhibit',
+                    contentURL: 'http://www.google.at',
+                    ipAddress: '192.168.0.114',
+                    locationTypeId: 4,
+                    contentTypeId: 1,
+                    statusId: 1,
+                    positionId: 1
+                });
+
+                this._location.create({
+                    id: 1001,
+                    parentId: 10,
+                    description: 'Drucker atExhibit',
+                    contentURL: 'http://www.google.at',
+                    ipAddress: '192.168.0.115',
+                    locationTypeId: 4,
+                    contentTypeId: 1,
+                    statusId: 1,
+                    positionId: 1
+                });
+
+                this._location.create({
+                    id: 1002,
+                    parentId: 10,
+                    description: 'Stud-Assi atExhibit',
+                    contentURL: 'http://www.google.at',
+                    ipAddress: '192.168.0.116',
+                    locationTypeId: 4,
+                    contentTypeId: 1,
+                    statusId: 1,
+                    positionId: 1
+                });
+
+                this._location.create({
+                    id: 10000,
+                    parentId: 10,
+                    description: 'Door',
+                    contentURL: 'http://www.google.at',
+                    ipAddress: '192.168.0.117',
+                    locationTypeId: 5,
+                    contentTypeId: 1,
+                    statusId: 1,
+                    positionId: 1
+                });
             });
         });
-        // this._sequelize.sync();
+
+        this._sequelize.sync();
     }
 
     public static getInstance(): Connection
@@ -178,8 +212,8 @@ export class Connection
         this._location.belongsTo(this._locationType, {foreignKey: {allowNull: false}});
 
         //_location to _contentType relation (1:n)
-        this._location.belongsTo(this._contentType, {foreignKey: {allowNull: false}});
-        this._contentType.hasMany(this._location, {foreignKey: {allowNull: false}});
+        this._location.belongsTo(this._contentType);
+        this._contentType.hasMany(this._location);
 
         //_location to _status relation (1:n)
         this._status.hasMany(this._location, {foreignKey: {allowNull: false}});
@@ -241,6 +275,15 @@ export class Connection
             description: {
                 type: Sequelize.STRING,
                 allowNull: false
+            },
+            currentSeat: {
+                type: Sequelize.INTEGER,
+                allowNull: true
+            },
+            maxSeat: {
+                type: Sequelize.INTEGER,
+                allowNull: true,
+                defaultValue: 1
             }
         });
 

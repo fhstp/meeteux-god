@@ -15,13 +15,18 @@ class WebSocket {
         this.socket.on('connection', (socket) => {
             socket.emit('news', { hello: 'world' });
             socket.on('registerOD', (data) => {
-                this.odController.registerOD(data).then((lookupTable) => {
-                    socket.emit('registerODResult', lookupTable);
+                this.odController.registerOD(data).then((values) => {
+                    socket.emit('registerODResult', values);
                 });
             });
             socket.on('registerLocation', (data) => {
                 this.locationController.registerLocation(data).then((message) => {
                     socket.emit('registerLocationResult', message);
+                });
+            });
+            socket.on('checkLocationStatus', (data) => {
+                this.locationController.checkLocationStatus(data).then((message) => {
+                    socket.emit('checkLocationStatusResult', message);
                 });
             });
         });
