@@ -30,7 +30,16 @@ class Connection {
                 description: 'webContent'
             });
             this._status.create({
-                description: 'running'
+                description: 'online'
+            });
+            this._status.create({
+                description: 'offline'
+            });
+            this._status.create({
+                description: 'free'
+            });
+            this._status.create({
+                description: 'occupied'
             });
             this._position.create({
                 longitude: 12,
@@ -117,7 +126,7 @@ class Connection {
                 });
             });
         });
-        this._sequelize.sync();
+        //this._sequelize.sync();
     }
     static getInstance() {
         if (Connection._instance === null || Connection._instance === undefined) {
@@ -202,6 +211,18 @@ class Connection {
             ipAddress: {
                 type: Sequelize.STRING,
                 allowNull: false
+            },
+            deviceOS: {
+                type: Sequelize.STRING,
+                allowNull: true
+            },
+            deviceVersion: {
+                type: Sequelize.STRING,
+                allowNull: true
+            },
+            deviceModel: {
+                type: Sequelize.STRING,
+                allowNull: true
             }
         });
         this._group = this._sequelize.define('group', {
