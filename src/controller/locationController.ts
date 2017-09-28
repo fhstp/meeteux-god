@@ -30,16 +30,17 @@ export class LocationController
 
     public checkLocationStatus(locationId: number): any
     {
-        let status: String = "OCCUPIED";
+        let status: String = "NOT FOUND";
         return this.database.user.findById(locationId).then( (location) =>
         {
-            //TODO: check status of location
-
             if(location.locationType != 3)
                 status = "NOT ACTIVE EXHIBIT";
 
-            if(location.currentSeat < location.maxSeat)
+            else if(location.statusId == 3 && location.currentSeat < location.maxSeat)
                 status = "FREE";
+
+            else
+                status = "OCCUPIED";
 
             return status;
         }).catch((err) => {

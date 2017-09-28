@@ -51,7 +51,19 @@ export class Connection
             });
 
             this._status.create({
-               description: 'running'
+               description: 'online'
+            });
+
+            this._status.create({
+                description: 'offline'
+            });
+
+            this._status.create({
+                description: 'free'
+            });
+
+            this._status.create({
+               description: 'occupied'
             });
 
             this._position.create({
@@ -144,7 +156,7 @@ export class Connection
             });
         });
 
-        this._sequelize.sync();
+        //this._sequelize.sync();
     }
 
     public static getInstance(): Connection
@@ -245,6 +257,18 @@ export class Connection
             ipAddress: {
                 type: Sequelize.STRING,
                 allowNull: false
+            },
+            deviceOS: {
+                type: Sequelize.STRING,
+                allowNull: true
+            },
+            deviceVersion: {
+                type: Sequelize.STRING,
+                allowNull: true
+            },
+            deviceModel: {
+                type: Sequelize.STRING,
+                allowNull: true
             }
         });
 
