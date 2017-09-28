@@ -5,11 +5,20 @@ class OdController {
     constructor() {
         this.database = database_1.Connection.getInstance();
     }
-    registerOD(identifier) {
+    registerOD(data) {
+        const identifier = data.identifier;
+        const deviceAddress = data.deviceAddress;
+        const deviceOS = data.deviceOS;
+        const deviceVersion = data.deviceVersion;
+        const deviceModel = data.deviceModel;
+        //const ipAddress: string = data.ipAddress;
         return this.database.user.create({
             name: identifier,
-            deviceAddress: 'not known',
-            ipAddress: 'not known'
+            deviceAddress: deviceAddress,
+            deviceOS: deviceOS,
+            deviceVersion: deviceVersion,
+            deviceModel: deviceModel,
+            ipAddress: 'not set'
         }).then((user) => {
             return this.database.location.findAll().then((locations) => {
                 return { user, locations };
