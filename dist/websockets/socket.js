@@ -3,11 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const IO = require("socket.io");
 const database_1 = require("../database");
 const controller_1 = require("../controller");
+const exhibitController_1 = require("../controller/exhibitController");
 class WebSocket {
     constructor(server) {
         this.socket = new IO(server);
         this.odController = new controller_1.OdController();
         this.locationController = new controller_1.LocationController();
+        this.exhibitController = new exhibitController_1.ExhibitController();
         this.database = database_1.Connection.getInstance();
         this.attachListeners();
     }
@@ -27,6 +29,13 @@ class WebSocket {
             socket.on('checkLocationStatus', (data) => {
                 this.locationController.checkLocationStatus(data).then((message) => {
                     socket.emit('checkLocationStatusResult', message);
+                });
+            });
+            socket.on('loginExhibit', () => {
+                const ipAddress = socket.handshake.address;
+                console.log(ipAddress);
+                this.exhibitController.loginExhibit(ipAddress).then((message) => {
+                    socket.emit('loginExhibitResult', message);
                 });
             });
         });
