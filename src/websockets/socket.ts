@@ -54,7 +54,7 @@ export class WebSocket
 
             socket.on('loginExhibit', () =>
             {
-                const ipAddress = socket.handshake.address;
+                const ipAddress = socket.request.connection.remoteAddress;
                 console.log(ipAddress);
                 this.exhibitController.loginExhibit(ipAddress).then( (message) =>
                 {
