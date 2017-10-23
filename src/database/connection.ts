@@ -17,6 +17,7 @@ export class Connection
 
     private constructor()
     {
+        console.log(process.env.DB_NAME + " / " + process.env.DB_USER + " / " + process.env.DB_PASSWORD);
         this._sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
             host: 'localhost',
             dialect: 'mysql',
