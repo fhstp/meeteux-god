@@ -13,7 +13,12 @@
     var socket = io.connect('http://god.meeteux.fhstp.ac.at');
     socket.on('news', function (data) {
         console.log(data);
-        socket.emit('registerOD', 'Niklas');
+        socket.emit('registerOD', {
+            identifier: "Schlese",
+            deviceAddress: "hausnummer",
+            deviceOS: "iOS",
+            deviceVersion: "Iphone 6",
+            deviceModel: "Iphone"});
         socket.emit('registerLocation', {user: 1, location: 100});
 
         socket.on('registerODResult', function (data) {
