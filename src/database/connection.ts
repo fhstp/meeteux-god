@@ -17,10 +17,10 @@ export class Connection
 
     private constructor()
     {
-        console.log(process.env.DB_NAME + " / " + process.env.DB_USER + " / " + process.env.DB_PASSWORD);
         this._sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
             host: 'localhost',
             dialect: 'mysql',
+            logging: false
         });
         this.initDatabaseTables();
         this.initDatabaseRelations();
@@ -82,24 +82,60 @@ export class Connection
                 ipAddress: '0.0.0.0'
             }).then ( () => {
                 this._location.create({
-                    id: 101,
+                    id: 100,
                     parentId: 10,
-                    description: 'Kerstin atExhibit',
-                    contentURL: 'http://www.google.at',
+                    description: 'Table1 atExhibit',
+                    contentURL: 'tableat',
                     ipAddress: '192.168.0.113',
                     locationTypeId: 3,
                     contentTypeId: 1,
                     statusId: 1,
                     positionId: 1,
                     currentSeat: 0,
-                    maxSeat: 2
+                    maxSeat: 4
                 }).then( () => {
                     this._location.create({
-                        id: 100,
-                        description: 'Kerstin onExhibit',
-                        parentId:101,
-                        contentURL: 'http://www.google.at',
-                        ipAddress: '192.168.0.112',
+                        id: 1000,
+                        description: 'Table1 onExhibit-1',
+                        parentId:100,
+                        contentURL: 'tableon',
+                        ipAddress: '0.0.0.0',
+                        locationTypeId: 2,
+                        contentTypeId: 1,
+                        statusId: 1,
+                        positionId: 1
+                    });
+
+                    this._location.create({
+                        id: 1001,
+                        description: 'Table1 onExhibit-2',
+                        parentId:100,
+                        contentURL: 'tableon',
+                        ipAddress: '0.0.0.0',
+                        locationTypeId: 2,
+                        contentTypeId: 1,
+                        statusId: 1,
+                        positionId: 1
+                    });
+
+                    this._location.create({
+                        id: 1002,
+                        description: 'Table1 onExhibit-3',
+                        parentId:100,
+                        contentURL: 'tableon',
+                        ipAddress: '0.0.0.0',
+                        locationTypeId: 2,
+                        contentTypeId: 1,
+                        statusId: 1,
+                        positionId: 1
+                    });
+
+                    this._location.create({
+                        id: 1003,
+                        description: 'Table1 onExhibit-4',
+                        parentId:100,
+                        contentURL: 'tableon',
+                        ipAddress: '0.0.0.0',
                         locationTypeId: 2,
                         contentTypeId: 1,
                         statusId: 1,
@@ -108,48 +144,120 @@ export class Connection
                 });
 
                 this._location.create({
-                    id: 1000,
-                    parentId: 10,
-                    description: 'Flo atExhibit',
-                    contentURL: 'http://www.google.at',
-                    ipAddress: '192.168.0.114',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-
-                this._location.create({
-                    id: 1001,
-                    parentId: 10,
-                    description: 'Drucker atExhibit',
-                    contentURL: 'http://www.google.at',
-                    ipAddress: '192.168.0.115',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-
-                this._location.create({
-                    id: 1002,
-                    parentId: 10,
-                    description: 'Stud-Assi atExhibit',
-                    contentURL: 'http://www.google.at',
-                    ipAddress: '192.168.0.116',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-
-                this._location.create({
                     id: 10000,
                     parentId: 10,
                     description: 'Door',
                     contentURL: 'http://www.google.at',
-                    ipAddress: '192.168.0.117',
+                    ipAddress: '0.0.0.0',
                     locationTypeId: 5,
+                    contentTypeId: 1,
+                    statusId: 1,
+                    positionId: 1
+                });
+
+                this._location.create({
+                    id: 1004,
+                    parentId: 10,
+                    description: 'passive Exhibit1',
+                    contentURL: 'passive',
+                    ipAddress: '0.0.0.0',
+                    locationTypeId: 4,
+                    contentTypeId: 1,
+                    statusId: 1,
+                    positionId: 1
+                });
+
+                this._location.create({
+                    id: 1005,
+                    parentId: 10,
+                    description: 'passive Exhibit2',
+                    contentURL: 'passive',
+                    ipAddress: '0.0.0.0',
+                    locationTypeId: 4,
+                    contentTypeId: 1,
+                    statusId: 1,
+                    positionId: 1
+                });
+
+                this._location.create({
+                    id: 1006,
+                    parentId: 10,
+                    description: 'passive Exhibit3',
+                    contentURL: 'passive',
+                    ipAddress: '0.0.0.0',
+                    locationTypeId: 4,
+                    contentTypeId: 1,
+                    statusId: 1,
+                    positionId: 1
+                });
+
+                this._location.create({
+                    id: 1007,
+                    parentId: 10,
+                    description: 'passive Exhibit4',
+                    contentURL: 'passive',
+                    ipAddress: '0.0.0.0',
+                    locationTypeId: 4,
+                    contentTypeId: 1,
+                    statusId: 1,
+                    positionId: 1
+                });
+
+                this._location.create({
+                    id: 1008,
+                    parentId: 10,
+                    description: 'passive Exhibit5',
+                    contentURL: 'passive',
+                    ipAddress: '0.0.0.0',
+                    locationTypeId: 4,
+                    contentTypeId: 1,
+                    statusId: 1,
+                    positionId: 1
+                });
+
+                this._location.create({
+                    id: 1009,
+                    parentId: 10,
+                    description: 'passive Exhibit6',
+                    contentURL: 'passive',
+                    ipAddress: '0.0.0.0',
+                    locationTypeId: 4,
+                    contentTypeId: 1,
+                    statusId: 1,
+                    positionId: 1
+                });
+
+                this._location.create({
+                    id: 1010,
+                    parentId: 10,
+                    description: 'passive Exhibit7',
+                    contentURL: 'passive',
+                    ipAddress: '0.0.0.0',
+                    locationTypeId: 4,
+                    contentTypeId: 1,
+                    statusId: 1,
+                    positionId: 1
+                });
+
+                this._location.create({
+                    id: 1011,
+                    parentId: 10,
+                    description: 'passive Exhibit8',
+                    contentURL: 'passive',
+                    ipAddress: '0.0.0.0',
+                    locationTypeId: 4,
+                    contentTypeId: 1,
+                    statusId: 1,
+                    positionId: 1
+                });
+
+                this._location.create({
+                    id: 1012,
+                    parentId: 10,
+                    description: 'passive Exhibit9',
+                    contentURL: 'passive',
+                    ipAddress: '0.0.0.0',
+                    locationTypeId: 4,
                     contentTypeId: 1,
                     statusId: 1,
                     positionId: 1
