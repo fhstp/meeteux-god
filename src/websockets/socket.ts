@@ -52,9 +52,8 @@ export class WebSocket
                });
             });
 
-            socket.on('loginExhibit', () =>
+            socket.on('loginExhibit', (ipAddress) =>
             {
-                const ipAddress = socket.request.connection.remoteAddress;
                 console.log(ipAddress);
                 this.exhibitController.loginExhibit(ipAddress).then( (message) =>
                 {

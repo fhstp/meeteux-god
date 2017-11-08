@@ -510,4 +510,8 @@ export class Connection
     get neighbor(): any {
         return this._neighbor;
     }
+
+    get sequelize(): any {
+        return this._sequelize;
+    }
 }
