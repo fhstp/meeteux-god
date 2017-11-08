@@ -30,13 +30,15 @@ export class LocationController
 
     public checkLocationStatus(locationId: number): any
     {
+        //console.log(locationId);
         let status: String = "NOT FOUND";
-        return this.database.user.findById(locationId).then( (location) =>
+        return this.database.location.findById(locationId).then( (location) =>
         {
-            if(location.locationType != 3)
+            //console.log(location);
+            if(location.locationTypeId != 3)
                 status = "NOT ACTIVE EXHIBIT";
 
-            else if(location.statusId == 3 && location.currentSeat < location.maxSeat)
+            else if(location.statusId === 3 && location.currentSeat < location.maxSeat)
                 status = "FREE";
 
             else
