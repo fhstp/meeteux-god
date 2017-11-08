@@ -20,11 +20,13 @@ class LocationController {
         });
     }
     checkLocationStatus(locationId) {
+        //console.log(locationId);
         let status = "NOT FOUND";
-        return this.database.user.findById(locationId).then((location) => {
-            if (location.locationType != 3)
+        return this.database.location.findById(locationId).then((location) => {
+            //console.log(location);
+            if (location.locationTypeId != 3)
                 status = "NOT ACTIVE EXHIBIT";
-            else if (location.statusId == 3 && location.currentSeat < location.maxSeat)
+            else if (location.statusId === 3 && location.currentSeat < location.maxSeat)
                 status = "FREE";
             else
                 status = "OCCUPIED";

@@ -64,7 +64,7 @@ class Connection {
                     ipAddress: '192.168.0.113',
                     locationTypeId: 3,
                     contentTypeId: 1,
-                    statusId: 1,
+                    statusId: 3,
                     positionId: 1,
                     currentSeat: 0,
                     maxSeat: 4
