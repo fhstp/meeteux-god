@@ -2,6 +2,7 @@ module.exports = {
     apps: [
         {
             name:"MEETeUX-GoD",
+            cwd: "/srv/production/current",
             script: "dist/index.js",
             env_production: {
                 NODE_ENV: 'production'
