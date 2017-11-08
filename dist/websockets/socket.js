@@ -31,8 +31,7 @@ class WebSocket {
                     socket.emit('checkLocationStatusResult', message);
                 });
             });
-            socket.on('loginExhibit', () => {
-                const ipAddress = socket.request.connection.remoteAddress;
+            socket.on('loginExhibit', (ipAddress) => {
                 console.log(ipAddress);
                 this.exhibitController.loginExhibit(ipAddress).then((message) => {
                     socket.emit('loginExhibitResult', message);

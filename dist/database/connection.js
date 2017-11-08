@@ -438,6 +438,9 @@ class Connection {
     get neighbor() {
         return this._neighbor;
     }
+    get sequelize() {
+        return this._sequelize;
+    }
 }
 exports.Connection = Connection;
 //# sourceMappingURL=connection.js.map
