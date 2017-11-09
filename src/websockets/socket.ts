@@ -44,6 +44,14 @@ export class WebSocket
                 });
             });
 
+            socket.on('disconnectedFromExhibit', (location) =>
+            {
+                this.locationController.disconnectedFromExhibit(location).then( (message) =>
+                {
+                    socket.emit('disconnectedFromExhibitResult', message);
+                });
+            });
+
             socket.on('checkLocationStatus', (data) =>
             {
                this.locationController.checkLocationStatus(data).then( (message) =>
@@ -54,7 +62,7 @@ export class WebSocket
 
             socket.on('loginExhibit', (ipAddress) =>
             {
-                console.log(ipAddress);
+                //console.log(ipAddress);
                 this.exhibitController.loginExhibit(ipAddress).then( (message) =>
                 {
                     socket.emit('loginExhibitResult', message);

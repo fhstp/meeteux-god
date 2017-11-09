@@ -34,7 +34,19 @@ export class LocationController
             //console.log(err);
             return "FAILED";
         });
+    }
 
+    public disconnectedFromExhibit(location: number): any
+    {
+        console.log("Location: " + location);
+        return this.database.location.update({currentSeat:this.database.sequelize.literal('currentSeat -1')}, {where: {id: location}}).then( (update) =>
+        {
+            console.log(update);
+            return "SUCCESS";
+        }).catch((err) => {
+            //console.log(err);
+            return "FAILED";
+        });;
     }
 
     public checkLocationStatus(locationId: number): any

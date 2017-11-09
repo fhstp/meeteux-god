@@ -14,6 +14,7 @@ export class ExhibitController
     {
         return this.database.location.findOne({where: {ipAddress: ipAddress}}).then( (exhibit) =>
         {
+            //console.log(exhibit);
             return exhibit;
         }).catch( (err) =>
         {

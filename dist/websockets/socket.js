@@ -26,13 +26,18 @@ class WebSocket {
                     socket.emit('registerLocationResult', message);
                 });
             });
+            socket.on('disconnectedFromExhibit', (location) => {
+                this.locationController.disconnectedFromExhibit(location).then((message) => {
+                    socket.emit('disconnectedFromExhibitResult', message);
+                });
+            });
             socket.on('checkLocationStatus', (data) => {
                 this.locationController.checkLocationStatus(data).then((message) => {
                     socket.emit('checkLocationStatusResult', message);
                 });
             });
             socket.on('loginExhibit', (ipAddress) => {
-                console.log(ipAddress);
+                //console.log(ipAddress);
                 this.exhibitController.loginExhibit(ipAddress).then((message) => {
                     socket.emit('loginExhibitResult', message);
                 });
