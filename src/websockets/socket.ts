@@ -54,7 +54,7 @@ export class WebSocket
 
             socket.on('loginExhibit', (ipAddress) =>
             {
-                console.log(ipAddress);
+                //console.log(ipAddress);
                 this.exhibitController.loginExhibit(ipAddress).then( (message) =>
                 {
                     socket.emit('loginExhibitResult', message);

@@ -86,7 +86,7 @@ export class Connection
                     parentId: 10,
                     description: 'Table1 atExhibit',
                     contentURL: 'tableat',
-                    ipAddress: '192.168.0.113',
+                    ipAddress: '10.0.0.11',
                     locationTypeId: 3,
                     contentTypeId: 1,
                     statusId: 3,
