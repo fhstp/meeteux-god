@@ -61,7 +61,7 @@ class Connection {
                     parentId: 10,
                     description: 'Table1 atExhibit',
                     contentURL: 'tableat',
-                    ipAddress: '10.0.0.11',
+                    ipAddress: '192.168.0.253',
                     locationTypeId: 3,
                     contentTypeId: 1,
                     statusId: 3,
