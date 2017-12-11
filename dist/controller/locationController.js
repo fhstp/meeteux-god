@@ -16,6 +16,7 @@ class LocationController {
             this.database.location.findById(location).then((currentLocation) => {
                 if (currentLocation.locationTypeId === 2) {
                     this.database.location.update({ currentSeat: this.database.sequelize.literal('currentSeat +1') }, { where: { id: currentLocation.parentId } });
+                    this.database.location.update({ statusId: 4 }, { where: { id: currentLocation.id } });
                 }
             });
         }).then(() => {
@@ -25,10 +26,11 @@ class LocationController {
             return "FAILED";
         });
     }
-    disconnectedFromExhibit(location) {
-        console.log("Location: " + location);
-        return this.database.location.update({ currentSeat: this.database.sequelize.literal('currentSeat -1') }, { where: { id: location } }).then((update) => {
-            console.log(update);
+    disconnectedFromExhibit(parentLocation, location) {
+        // console.log("Location: " + location);
+        return this.database.location.update({ statusId: 3 }, { where: { id: location } }).then(() => {
+            return this.database.location.update({ currentSeat: this.database.sequelize.literal('currentSeat -1') }, { where: { id: parentLocation } });
+        }).then(() => {
             return "SUCCESS";
         }).catch((err) => {
             //console.log(err);
@@ -41,9 +43,11 @@ class LocationController {
         let status = "NOT FOUND";
         return this.database.location.findById(locationId).then((location) => {
             //console.log(location);
-            if (location.locationTypeId != 3)
+            if (location.locationTypeId != 3 && location.locationTypeId != 2)
                 status = "NOT ACTIVE EXHIBIT";
-            else if (location.statusId === 3 && location.currentSeat < location.maxSeat)
+            else if (location.locationTypeId === 3 && location.statusId === 3 && location.currentSeat < location.maxSeat)
+                status = "FREE";
+            else if (location.locationTypeId === 2 && location.statusId === 3)
                 status = "FREE";
             else
                 status = "OCCUPIED";

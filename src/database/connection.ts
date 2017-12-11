@@ -20,7 +20,7 @@ export class Connection
         this._sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
             host: 'localhost',
             dialect: 'mysql',
-            logging: false
+            logging: true
         });
         this.initDatabaseTables();
         this.initDatabaseRelations();
@@ -28,22 +28,27 @@ export class Connection
         this._sequelize.sync({force: true}).then(() => {
 
             this._locationType.create({
+                id: 1,
                 description: 'room'
             });
 
             this._locationType.create({
+                id: 2,
                 description: 'activeExhibitOn'
             });
 
             this._locationType.create({
+                id: 3,
                 description: 'activeExhibitAt'
             });
 
             this._locationType.create({
+                id: 4,
                 description: 'passiveExhibit'
             });
 
             this._locationType.create({
+                id: 5,
                 description: 'door'
             });
 
@@ -52,18 +57,22 @@ export class Connection
             });
 
             this._status.create({
+                id: 1,
                description: 'online'
             });
 
             this._status.create({
+                id: 2,
                 description: 'offline'
             });
 
             this._status.create({
+                id: 3,
                 description: 'free'
             });
 
             this._status.create({
+                id: 4,
                description: 'occupied'
             });
 
@@ -86,7 +95,7 @@ export class Connection
                     parentId: 10,
                     description: 'Table1 atExhibit',
                     contentURL: 'tableat',
-                    ipAddress: '192.168.0.253',
+                    ipAddress: '192.168.8.253',
                     locationTypeId: 3,
                     contentTypeId: 1,
                     statusId: 3,
@@ -102,7 +111,7 @@ export class Connection
                         ipAddress: '0.0.0.0',
                         locationTypeId: 2,
                         contentTypeId: 1,
-                        statusId: 1,
+                        statusId: 3,
                         positionId: 1
                     });
 
@@ -114,7 +123,7 @@ export class Connection
                         ipAddress: '0.0.0.0',
                         locationTypeId: 2,
                         contentTypeId: 1,
-                        statusId: 1,
+                        statusId: 3,
                         positionId: 1
                     });
 
@@ -126,7 +135,7 @@ export class Connection
                         ipAddress: '0.0.0.0',
                         locationTypeId: 2,
                         contentTypeId: 1,
-                        statusId: 1,
+                        statusId: 3,
                         positionId: 1
                     });
 
@@ -138,7 +147,7 @@ export class Connection
                         ipAddress: '0.0.0.0',
                         locationTypeId: 2,
                         contentTypeId: 1,
-                        statusId: 1,
+                        statusId: 3,
                         positionId: 1
                     });
                 });
@@ -432,6 +441,11 @@ export class Connection
         });
 
         this._locationType = this._sequelize.define('locationType', {
+            id: {
+                type: Sequelize.INTEGER,
+                primaryKey: true,
+                autoIncrement: false
+            },
             description: {
                 type: Sequelize.STRING,
                 allowNull: false
@@ -446,6 +460,11 @@ export class Connection
         });
 
         this._status = this._sequelize.define('status', {
+            id: {
+                type: Sequelize.INTEGER,
+                primaryKey: true,
+                autoIncrement: false
+            },
             description: {
                 type: Sequelize.STRING,
                 allowNull: false
