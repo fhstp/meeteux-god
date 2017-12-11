@@ -44,9 +44,11 @@ export class WebSocket
                 });
             });
 
-            socket.on('disconnectedFromExhibit', (location) =>
+            socket.on('disconnectedFromExhibit', (data) =>
             {
-                this.locationController.disconnectedFromExhibit(location).then( (message) =>
+                const parentLocation = data.parentLocation;
+                const location = data.location;
+                this.locationController.disconnectedFromExhibit(parentLocation, location).then( (message) =>
                 {
                     socket.emit('disconnectedFromExhibitResult', message);
                 });

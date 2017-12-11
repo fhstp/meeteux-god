@@ -26,8 +26,10 @@ class WebSocket {
                     socket.emit('registerLocationResult', message);
                 });
             });
-            socket.on('disconnectedFromExhibit', (location) => {
-                this.locationController.disconnectedFromExhibit(location).then((message) => {
+            socket.on('disconnectedFromExhibit', (data) => {
+                const parentLocation = data.parentLocation;
+                const location = data.location;
+                this.locationController.disconnectedFromExhibit(parentLocation, location).then((message) => {
                     socket.emit('disconnectedFromExhibitResult', message);
                 });
             });
