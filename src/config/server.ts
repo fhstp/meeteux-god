@@ -23,11 +23,11 @@ export default class Server
         console.log('Server runs on Port: ' + process.env.SERVER_PORT);
         this.server.listen(process.env.SERVER_PORT);
 
-        this.app.get('/', function (req, res)
+        /*this.app.get('/', function (req, res)
         {
             console.log(process.env.NODE_PATH);
             res.sendFile(process.env.NODE_PATH + '/assets/godIndex.html');
-        });
+        });*/
     }
 
     private loadCredentials(): any
