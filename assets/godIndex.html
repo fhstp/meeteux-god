@@ -10,7 +10,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
 <script>
-    var socket = io.connect('http://god.meeteux.fhstp.ac.at');
+    var socket = io.connect('https://god.meeteux.fhstp.ac.at:3000');
     socket.on('news', function (data) {
         console.log(data);
         socket.emit('registerOD', {
