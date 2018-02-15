@@ -14,18 +14,25 @@ export class Connection
     private _position: any;
     private _activity: any;
     private _neighbor:any;
+    private _settings: any;
+
+    private _currentSettings: any;
 
     private constructor()
     {
         this._sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
             host: 'localhost',
             dialect: 'mysql',
-            logging: true
+            logging: false
         });
         this.initDatabaseTables();
         this.initDatabaseRelations();
 
         this._sequelize.sync({force: true}).then(() => {
+
+            this._settings.create({
+                guestNumber: 1
+            });
 
             this._locationType.create({
                 id: 1,
@@ -272,9 +279,11 @@ export class Connection
                     positionId: 1
                 });
             });
-        });
+        }).then( this._settings.findById(1).then(result => this._currentSettings = result));
 
-        //this._sequelize.sync();
+        /*
+        this._sequelize.sync().then( this._settings.findById(1).then(result => this._currentSettings = result));
+        */
     }
 
     public static getInstance(): Connection
@@ -356,10 +365,21 @@ export class Connection
 
     private initDatabaseTables():void
     {
+        this._settings = this._sequelize.define('setting', {
+            guestNumber: {
+                type: Sequelize.INTEGER
+            }
+        });
+
         this._user = this._sequelize.define('user', {
             name: {
                 type: Sequelize.STRING,
                 allowNull: false
+            },
+            isGuest: {
+                type: Sequelize.BOOLEAN,
+                allowNull: false,
+                defaultValue: true
             },
             currentLocation: {
                 type: Sequelize.INTEGER,
@@ -494,6 +514,15 @@ export class Connection
         });
     }
 
+    public getNextGuestNumber(): Number
+    {
+        const numb = this._currentSettings.guestNumber;
+        this._currentSettings.guestNumber = numb+1;
+        this._currentSettings.save();
+
+        return numb;
+    }
+
     get activity(): any {
         return this._activity;
     }
@@ -528,6 +557,10 @@ export class Connection
 
     get neighbor(): any {
         return this._neighbor;
+    }
+
+    get currentSettings(): any {
+        return this._currentSettings;
     }
 
     get sequelize(): any {

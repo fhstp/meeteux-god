@@ -47,7 +47,20 @@ export class LocationController
         }).catch((err) => {
             //console.log(err);
             return "FAILED";
-        });;
+        });
+    }
+
+    public tableDisconnectFromExhibit(users: any): void
+    {
+        for(let u of users)
+        {
+            this.database.user.findById(u.id).then(user => {
+                this.database.location.findById(user.currentLocation).then( location => {
+                    this.disconnectedFromExhibit(location.parentId, location.id);
+                    this.registerLocation({user: user.id, location: location.parentId});
+                });
+            });
+        }
     }
 
     public checkLocationStatus(locationId: number): any

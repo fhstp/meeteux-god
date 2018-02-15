@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const IO = require("socket.io");
+const jwt = require("jsonwebtoken");
 const database_1 = require("../database");
 const controller_1 = require("../controller");
 const exhibitController_1 = require("../controller/exhibitController");
 class WebSocket {
     constructor(server) {
-        this.socket = new IO(server);
+        this.io = new IO(server);
         this.odController = new controller_1.OdController();
         this.locationController = new controller_1.LocationController();
         this.exhibitController = new exhibitController_1.ExhibitController();
@@ -14,11 +15,56 @@ class WebSocket {
         this.attachListeners();
     }
     attachListeners() {
-        this.socket.on('connection', (socket) => {
+        this.io.on('connection', (socket) => {
+            socket.use((packet, next) => {
+                const event = packet[0];
+                const token = socket.token;
+                if (event !== 'registerOD') {
+                    jwt.verify(token, process.env.SECRET, function (err, decoded) {
+                        if (err)
+                            return next(new Error('Invalid token Error'));
+                        const user = decoded.user;
+                        if (user) {
+                            if (user.isGuest) {
+                                if (this.checkGuestAccess(event)) {
+                                    next();
+                                }
+                                else {
+                                    next(new Error('Access Restricted Error'));
+                                }
+                            }
+                            else {
+                                next();
+                            }
+                        }
+                        next(new Error('Access Restricted Error'));
+                    });
+                }
+                next();
+            });
             socket.emit('news', { hello: 'world' });
             socket.on('registerOD', (data) => {
                 this.odController.registerOD(data).then((values) => {
-                    socket.emit('registerODResult', values);
+                    const user = values.user;
+                    const locations = values.locations;
+                    // Generate token
+                    const token = jwt.sign({ user }, process.env.SECRET);
+                    // Add token to result and to the socket connection
+                    const result = { token, user, locations };
+                    socket.token = token;
+                    socket.emit('registerODResult', result);
+                });
+            });
+            socket.on('registerODGuest', (data) => {
+                this.odController.registerGuest(data).then((values) => {
+                    const user = values.user;
+                    const locations = values.locations;
+                    // Generate token
+                    const token = jwt.sign({ user }, 'cookies');
+                    // Add token to result and to the socket connection
+                    const result = { token, user, locations };
+                    socket.token = token;
+                    socket.emit('registerODResult', result);
                 });
             });
             socket.on('registerLocation', (data) => {
@@ -33,6 +79,9 @@ class WebSocket {
                     socket.emit('disconnectedFromExhibitResult', message);
                 });
             });
+            socket.on('disconnectNotRespondingUsers', (data) => {
+                this.locationController.tableDisconnectFromExhibit(data);
+            });
             socket.on('checkLocationStatus', (data) => {
                 this.locationController.checkLocationStatus(data).then((message) => {
                     socket.emit('checkLocationStatusResult', message);
@@ -45,6 +94,11 @@ class WebSocket {
                 });
             });
         });
+    }
+    checkGuestAccess(event) {
+        let ok = true;
+        // TODO: Check with restricted events
+        return ok;
     }
 }
 exports.WebSocket = WebSocket;

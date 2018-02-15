@@ -14,6 +14,7 @@ class OdController {
         //const ipAddress: string = data.ipAddress;
         return this.database.user.create({
             name: identifier,
+            isGuest: false,
             deviceAddress: deviceAddress,
             deviceOS: deviceOS,
             deviceVersion: deviceVersion,
@@ -26,6 +27,35 @@ class OdController {
         }).catch((err) => {
             //console.log(err);
             return "FAILED";
+        });
+    }
+    registerGuest(data) {
+        const next = this.database.getNextGuestNumber();
+        const identifier = 'Guest' + next;
+        const deviceAddress = data.deviceAddress;
+        const deviceOS = data.deviceOS;
+        const deviceVersion = data.deviceVersion;
+        const deviceModel = data.deviceModel;
+        //const ipAddress: string = data.ipAddress;
+        return this.database.user.create({
+            name: identifier,
+            deviceAddress: deviceAddress,
+            deviceOS: deviceOS,
+            deviceVersion: deviceVersion,
+            deviceModel: deviceModel,
+            ipAddress: 'not set'
+        }).then((user) => {
+            return this.database.location.findAll().then((locations) => {
+                return { user, locations };
+            });
+        }).catch((err) => {
+            //console.log(err);
+            return "FAILED";
+        });
+    }
+    findUser(identifier) {
+        return this.database.user.findById(identifier).then(user => {
+            return user;
         });
     }
 }

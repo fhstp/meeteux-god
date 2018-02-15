@@ -7,11 +7,14 @@ class Connection {
         this._sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
             host: 'localhost',
             dialect: 'mysql',
-            logging: true
+            logging: false
         });
         this.initDatabaseTables();
         this.initDatabaseRelations();
         this._sequelize.sync({ force: true }).then(() => {
+            this._settings.create({
+                guestNumber: 1
+            });
             this._locationType.create({
                 id: 1,
                 description: 'room'
@@ -234,8 +237,10 @@ class Connection {
                     positionId: 1
                 });
             });
-        });
-        //this._sequelize.sync();
+        }).then(this._settings.findById(1).then(result => this._currentSettings = result));
+        /*
+        this._sequelize.sync().then( this._settings.findById(1).then(result => this._currentSettings = result));
+        */
     }
     static getInstance() {
         if (Connection._instance === null || Connection._instance === undefined) {
@@ -301,10 +306,20 @@ class Connection {
         this._location.belongsTo(this._position, { foreignKey: { allowNull: false } });
     }
     initDatabaseTables() {
+        this._settings = this._sequelize.define('setting', {
+            guestNumber: {
+                type: Sequelize.INTEGER
+            }
+        });
         this._user = this._sequelize.define('user', {
             name: {
                 type: Sequelize.STRING,
                 allowNull: false
+            },
+            isGuest: {
+                type: Sequelize.BOOLEAN,
+                allowNull: false,
+                defaultValue: true
             },
             currentLocation: {
                 type: Sequelize.INTEGER,
@@ -430,6 +445,12 @@ class Connection {
             }
         });
     }
+    getNextGuestNumber() {
+        const numb = this._currentSettings.guestNumber;
+        this._currentSettings.guestNumber = numb + 1;
+        this._currentSettings.save();
+        return numb;
+    }
     get activity() {
         return this._activity;
     }
@@ -456,6 +477,9 @@ class Connection {
     }
     get neighbor() {
         return this._neighbor;
+    }
+    get currentSettings() {
+        return this._currentSettings;
     }
     get sequelize() {
         return this._sequelize;

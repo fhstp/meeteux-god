@@ -10,24 +10,28 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
 <script>
-    var socket = io.connect('http://localhost:3000');
+    var token = undefined;
+    var socket = io('https://localhost:3000/');
+
     socket.on('news', function (data) {
-        console.log(data);
-        socket.emit('registerOD', {
+
+        socket.emit('registerODGuest', {
             identifier: "Schlese",
             deviceAddress: "hausnummer",
             deviceOS: "iOS",
             deviceVersion: "Iphone 6",
             deviceModel: "Iphone"});
-        socket.emit('registerLocation', {user: 1, location: 10});
+        //
 
         socket.on('registerODResult', function (data) {
             console.log(data);
+            socket.emit('registerLocation', {user: 1, location: 10});
         });
 
         socket.on('registerLocationResult', function (data) {
             console.log(data);
         });
+
     });
 </script>
 </body>
