@@ -1,5 +1,6 @@
 
 import { Connection } from '../database';
+import {Message, LOCATION_NOT_FOUND, SUCCESS_OK, LOCATION_NOT_UPDATED, LOCATION_NOT_CREATED} from '../messages';
 
 export class LocationController
 {
@@ -30,23 +31,23 @@ export class LocationController
             });
         }).then( () =>
         {
-            return location;
-        }).catch((err) => {
-            //console.log(err);
-            return "FAILED";
+            return {data: location, message: new Message(SUCCESS_OK, 'Location Registered successfully')};
+        }).catch(() => {
+            return {data: null, message: new Message(LOCATION_NOT_UPDATED, 'Could not register location')};
         });
     }
 
-    public disconnectedFromExhibit(parentLocation: number, location: number): any
+    public disconnectedFromExhibit(data: any): any
     {
-        // console.log("Location: " + location);
+        const parentLocation: number = data.parentLocation;
+        const location: number = data.location;
+
         return this.database.location.update({statusId: 3}, {where: {id: location}}).then( () => {
             return this.database.location.update({currentSeat: this.database.sequelize.literal('currentSeat -1')}, {where: {id: parentLocation}});
         }).then( () => {
-            return "SUCCESS";
-        }).catch((err) => {
-            //console.log(err);
-            return "FAILED";
+            return {data: {location, parent: parentLocation}, message: new Message(SUCCESS_OK, 'Disconnected successfully from Exhibit')};
+        }).catch(() => {
+            return {data: null, message: new Message(LOCATION_NOT_UPDATED, "Could not update location status")};
         });
     }
 
@@ -56,7 +57,7 @@ export class LocationController
         {
             this.database.user.findById(u.id).then(user => {
                 this.database.location.findById(user.currentLocation).then( location => {
-                    this.disconnectedFromExhibit(location.parentId, location.id);
+                    this.disconnectedFromExhibit({parentLocation: location.parentId, location: location.id});
                     this.registerLocation({user: user.id, location: location.parentId});
                 });
             });
@@ -82,10 +83,9 @@ export class LocationController
             else
                 status = "OCCUPIED";
 
-            return status;
-        }).catch((err) => {
-            //console.log(err);
-            return "FAILED";
+            return {data: {status, location: locationId} , message: new Message(SUCCESS_OK, "Status queried successfully")};
+        }).catch(() => {
+            return {data: null, message: new Message(LOCATION_NOT_FOUND, "Could not find location")};
         });
     }
 }

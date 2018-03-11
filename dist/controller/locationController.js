@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = require("../database");
+const messages_1 = require("../messages");
 class LocationController {
     constructor() {
         this.database = database_1.Connection.getInstance();
@@ -20,28 +21,27 @@ class LocationController {
                 }
             });
         }).then(() => {
-            return location;
-        }).catch((err) => {
-            //console.log(err);
-            return "FAILED";
+            return { data: location, message: new messages_1.Message(messages_1.SUCCESS_OK, 'Location Registered successfully') };
+        }).catch(() => {
+            return { data: null, message: new messages_1.Message(messages_1.LOCATION_NOT_UPDATED, 'Could not register location') };
         });
     }
-    disconnectedFromExhibit(parentLocation, location) {
-        // console.log("Location: " + location);
+    disconnectedFromExhibit(data) {
+        const parentLocation = data.parentLocation;
+        const location = data.location;
         return this.database.location.update({ statusId: 3 }, { where: { id: location } }).then(() => {
             return this.database.location.update({ currentSeat: this.database.sequelize.literal('currentSeat -1') }, { where: { id: parentLocation } });
         }).then(() => {
-            return "SUCCESS";
-        }).catch((err) => {
-            //console.log(err);
-            return "FAILED";
+            return { data: { location, parent: parentLocation }, message: new messages_1.Message(messages_1.SUCCESS_OK, 'Disconnected successfully from Exhibit') };
+        }).catch(() => {
+            return { data: null, message: new messages_1.Message(messages_1.LOCATION_NOT_UPDATED, "Could not update location status") };
         });
     }
     tableDisconnectFromExhibit(users) {
         for (let u of users) {
             this.database.user.findById(u.id).then(user => {
                 this.database.location.findById(user.currentLocation).then(location => {
-                    this.disconnectedFromExhibit(location.parentId, location.id);
+                    this.disconnectedFromExhibit({ parentLocation: location.parentId, location: location.id });
                     this.registerLocation({ user: user.id, location: location.parentId });
                 });
             });
@@ -60,10 +60,9 @@ class LocationController {
                 status = "FREE";
             else
                 status = "OCCUPIED";
-            return status;
-        }).catch((err) => {
-            //console.log(err);
-            return "FAILED";
+            return { data: { status, location: locationId }, message: new messages_1.Message(messages_1.SUCCESS_OK, "Status queried successfully") };
+        }).catch(() => {
+            return { data: null, message: new messages_1.Message(messages_1.LOCATION_NOT_FOUND, "Could not find location") };
         });
     }
 }

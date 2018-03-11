@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = require("../database");
+const messages_1 = require("../messages");
+const odTypes_1 = require("../messages/odTypes");
 class OdController {
     constructor() {
         this.database = database_1.Connection.getInstance();
@@ -22,11 +24,10 @@ class OdController {
             ipAddress: 'not set'
         }).then((user) => {
             return this.database.location.findAll().then((locations) => {
-                return { user, locations };
+                return { data: { user, locations }, message: new messages_1.Message(messages_1.SUCCESS_CREATED, "User created successfully") };
             });
-        }).catch((err) => {
-            //console.log(err);
-            return "FAILED";
+        }).catch(() => {
+            return { data: null, message: new messages_1.Message(odTypes_1.OD_NOT_CREATED, "Could not create user") };
         });
     }
     registerGuest(data) {
@@ -46,11 +47,10 @@ class OdController {
             ipAddress: 'not set'
         }).then((user) => {
             return this.database.location.findAll().then((locations) => {
-                return { user, locations };
+                return { data: { user, locations }, message: new messages_1.Message(messages_1.SUCCESS_CREATED, "User created successfully") };
             });
-        }).catch((err) => {
-            //console.log(err);
-            return "FAILED";
+        }).catch(() => {
+            return { data: null, message: new messages_1.Message(odTypes_1.OD_NOT_CREATED, "User could not be registered") };
         });
     }
     findUser(identifier) {

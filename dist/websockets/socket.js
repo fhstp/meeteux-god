@@ -20,7 +20,7 @@ class WebSocket {
                 const event = packet[0];
                 const token = socket.token;
                 if (event !== 'registerOD') {
-                    jwt.verify(token, process.env.SECRET, function (err, decoded) {
+                    jwt.verify(token, process.env.SECRET, (err, decoded) => {
                         if (err)
                             return next(new Error('Invalid token Error'));
                         const user = decoded.user;
@@ -44,25 +44,25 @@ class WebSocket {
             });
             socket.emit('news', { hello: 'world' });
             socket.on('registerOD', (data) => {
-                this.odController.registerOD(data).then((values) => {
-                    const user = values.user;
-                    const locations = values.locations;
+                this.odController.registerOD(data).then((result) => {
+                    const user = result.data.user;
+                    const locations = result.data.locations;
                     // Generate token
                     const token = jwt.sign({ user }, process.env.SECRET);
                     // Add token to result and to the socket connection
-                    const result = { token, user, locations };
+                    result.data = { token, user, locations };
                     socket.token = token;
                     socket.emit('registerODResult', result);
                 });
             });
             socket.on('registerODGuest', (data) => {
-                this.odController.registerGuest(data).then((values) => {
-                    const user = values.user;
-                    const locations = values.locations;
+                this.odController.registerGuest(data).then((result) => {
+                    const user = result.data.user;
+                    const locations = result.data.locations;
                     // Generate token
-                    const token = jwt.sign({ user }, 'cookies');
+                    const token = jwt.sign({ user }, process.env.SECRET);
                     // Add token to result and to the socket connection
-                    const result = { token, user, locations };
+                    result.data = { token, user, locations };
                     socket.token = token;
                     socket.emit('registerODResult', result);
                 });
@@ -73,13 +73,12 @@ class WebSocket {
                 });
             });
             socket.on('disconnectedFromExhibit', (data) => {
-                const parentLocation = data.parentLocation;
-                const location = data.location;
-                this.locationController.disconnectedFromExhibit(parentLocation, location).then((message) => {
+                this.locationController.disconnectedFromExhibit(data).then((message) => {
                     socket.emit('disconnectedFromExhibitResult', message);
                 });
             });
             socket.on('disconnectNotRespondingUsers', (data) => {
+                console.log(data);
                 this.locationController.tableDisconnectFromExhibit(data);
             });
             socket.on('checkLocationStatus', (data) => {
@@ -88,7 +87,6 @@ class WebSocket {
                 });
             });
             socket.on('loginExhibit', (ipAddress) => {
-                //console.log(ipAddress);
                 this.exhibitController.loginExhibit(ipAddress).then((message) => {
                     socket.emit('loginExhibitResult', message);
                 });

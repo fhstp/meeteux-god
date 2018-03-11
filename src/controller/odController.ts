@@ -1,5 +1,7 @@
 
 import { Connection } from '../database';
+import {Message, SUCCESS_CREATED} from "../messages";
+import {OD_NOT_CREATED} from "../messages/odTypes";
 
 export class OdController
 {
@@ -29,11 +31,10 @@ export class OdController
             ipAddress: 'not set'
         }).then( (user) => {
             return this.database.location.findAll().then( (locations) => {
-                return {user, locations};
+                return {data: {user, locations}, message: new Message(SUCCESS_CREATED, "User created successfully")};
             });
-        }).catch((err) => {
-            //console.log(err);
-            return "FAILED";
+        }).catch(() => {
+            return {data: null, message: new Message(OD_NOT_CREATED, "Could not create user")};
         });
     }
 
@@ -57,11 +58,10 @@ export class OdController
             ipAddress: 'not set'
         }).then( (user) => {
             return this.database.location.findAll().then( (locations) => {
-                return {user, locations};
+                return {data: {user, locations}, message: new Message(SUCCESS_CREATED, "User created successfully")};
             });
-        }).catch((err) => {
-            //console.log(err);
-            return "FAILED";
+        }).catch(() => {
+            return {data: null, message: new Message(OD_NOT_CREATED, "User could not be registered")};
         });
     }
 
