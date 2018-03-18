@@ -1,7 +1,8 @@
 
 import { Connection } from '../database';
-import {Message, SUCCESS_CREATED} from "../messages";
+import {Message, SUCCESS_CREATED, SUCCESS_LOGGED_IN} from "../messages";
 import {OD_NOT_CREATED} from "../messages/odTypes";
+import {LOGIN_FAILED} from "../messages/authenticationTypes";
 
 export class OdController
 {
@@ -70,5 +71,31 @@ export class OdController
         return this.database.user.findById(identifier).then( user => {
             return user;
         });
+    }
+
+    public autoLoginUser(identifier: any): any
+    {
+        return this.database.user.findById(identifier).then( user => {
+            return this.database.location.findAll().then( (locations) => {
+                return {data: {user, locations}, message: new Message(SUCCESS_LOGGED_IN, "User logged in successfully")};
+            });
+        }).catch(() => {
+            return {data: null, message: new Message(LOGIN_FAILED, "User not found!")}
+        });
+    }
+
+    public loginUser(data: any): any
+    {
+        const user = data.user;
+        const password = data.password;
+
+        return this.database.user.findOne({where: {name: user, password: password}}).then( (user) =>
+        {
+            return this.database.location.findAll().then( (locations) => {
+                return {data: {user, locations}, message: new Message(SUCCESS_LOGGED_IN, "User logged in successfully")};
+            });
+        }).catch(() => {
+            return {data: null, message: new Message(LOGIN_FAILED, "User not found!")}
+        });;
     }
 }

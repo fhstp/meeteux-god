@@ -316,6 +316,10 @@ class Connection {
                 type: Sequelize.STRING,
                 allowNull: false
             },
+            password: {
+                type: Sequelize.STRING,
+                allowNull: true
+            },
             isGuest: {
                 type: Sequelize.BOOLEAN,
                 allowNull: false,

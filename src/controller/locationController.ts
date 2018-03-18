@@ -20,6 +20,8 @@ export class LocationController
             userId: user,
             locationId: location,
             timestamp: Date.now()
+        }).then(() => {
+            this.database.user.update({currentLocation:location}, {where: {id: user}});
         }).then( () => {
             this.database.location.findById(location).then( (currentLocation) =>
             {

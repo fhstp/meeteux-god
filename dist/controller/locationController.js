@@ -14,6 +14,8 @@ class LocationController {
             locationId: location,
             timestamp: Date.now()
         }).then(() => {
+            this.database.user.update({ currentLocation: location }, { where: { id: user } });
+        }).then(() => {
             this.database.location.findById(location).then((currentLocation) => {
                 if (currentLocation.locationTypeId === 2) {
                     this.database.location.update({ currentSeat: this.database.sequelize.literal('currentSeat +1') }, { where: { id: currentLocation.parentId } });

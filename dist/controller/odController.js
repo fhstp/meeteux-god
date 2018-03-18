@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = require("../database");
 const messages_1 = require("../messages");
 const odTypes_1 = require("../messages/odTypes");
+const authenticationTypes_1 = require("../messages/authenticationTypes");
 class OdController {
     constructor() {
         this.database = database_1.Connection.getInstance();
@@ -57,6 +58,27 @@ class OdController {
         return this.database.user.findById(identifier).then(user => {
             return user;
         });
+    }
+    autoLoginUser(identifier) {
+        return this.database.user.findById(identifier).then(user => {
+            return this.database.location.findAll().then((locations) => {
+                return { data: { user, locations }, message: new messages_1.Message(messages_1.SUCCESS_LOGGED_IN, "User logged in successfully") };
+            });
+        }).catch(() => {
+            return { data: null, message: new messages_1.Message(authenticationTypes_1.LOGIN_FAILED, "User not found!") };
+        });
+    }
+    loginUser(data) {
+        const user = data.user;
+        const password = data.password;
+        return this.database.user.findOne({ where: { name: user, password: password } }).then((user) => {
+            return this.database.location.findAll().then((locations) => {
+                return { data: { user, locations }, message: new messages_1.Message(messages_1.SUCCESS_LOGGED_IN, "User logged in successfully") };
+            });
+        }).catch(() => {
+            return { data: null, message: new messages_1.Message(authenticationTypes_1.LOGIN_FAILED, "User not found!") };
+        });
+        ;
     }
 }
 exports.OdController = OdController;
