@@ -21,7 +21,7 @@ class WebSocket {
             socket.use((packet, next) => {
                 const event = packet[0];
                 const token = socket.token;
-                if (event !== 'registerOD' || event !== 'disconnectedFromExhibit' || event !== 'loginExhibit' || event !== 'loginOD') {
+                if (event.localeCompare('registerOD') !== 0 && event.localeCompare('registerODGuest') !== 0 && event.localeCompare('disconnectedFromExhibit') !== 0 && event.localeCompare('loginExhibit') !== 0 && event.localeCompare('loginExhibit') !== 0) {
                     jwt.verify(token, process.env.SECRET, (err, decoded) => {
                         if (err)
                             return next(new Error('Invalid token Error'));
@@ -42,7 +42,9 @@ class WebSocket {
                         next(new Error('Access Restricted Error'));
                     });
                 }
-                next();
+                else {
+                    next();
+                }
             });
             socket.emit('news', { hello: 'world' });
             socket.on('registerOD', (data) => {
@@ -101,7 +103,7 @@ class WebSocket {
                 });
             });
             socket.on('registerLocation', (data) => {
-                console.log("register location: " + data.location + ", " + data.user);
+                // console.log("register location: " + data.location + ", " + data.user);
                 this.locationController.registerLocation(data).then((message) => {
                     socket.emit('registerLocationResult', message);
                 });
