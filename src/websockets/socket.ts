@@ -34,7 +34,7 @@ export class WebSocket
                 const event: String = packet[0];
                 const token = socket.token;
 
-                if(event.localeCompare('registerOD') !== 0 && event.localeCompare('registerODGuest') !== 0 && event.localeCompare('disconnectedFromExhibit') !== 0 && event.localeCompare('loginExhibit') !== 0 && event.localeCompare('loginExhibit') !== 0)
+                if(event.localeCompare('registerOD') !== 0 && event.localeCompare('autoLoginOD') !== 0 && event.localeCompare('registerODGuest') !== 0 && event.localeCompare('disconnectedFromExhibit') !== 0 && event.localeCompare('loginExhibit') !== 0 && event.localeCompare('loginExhibit') !== 0)
                 {
                     jwt.verify(token, process.env.SECRET, (err, decoded) =>
                     {
