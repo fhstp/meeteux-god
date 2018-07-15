@@ -28,6 +28,7 @@ export class Connection
         this.initDatabaseTables();
         this.initDatabaseRelations();
 
+
         this._sequelize.sync({force: true}).then(() => {
 
             this._settings.create({
@@ -95,7 +96,8 @@ export class Connection
                 locationTypeId: 1,
                 statusId: 1,
                 positionId: 1,
-                ipAddress: '0.0.0.0'
+                ipAddress: '0.0.0.0',
+                isStartPoint: true
             }).then ( () => {
                 this._location.create({
                     id: 100,
@@ -281,9 +283,9 @@ export class Connection
             });
         }).then( this._settings.findById(1).then(result => this._currentSettings = result));
 
-        /*
-        this._sequelize.sync().then( this._settings.findById(1).then(result => this._currentSettings = result));
-        */
+
+        // this._sequelize.sync().then( this._settings.findById(1).then(result => this._currentSettings = result));
+
     }
 
     public static getInstance(): Connection
@@ -450,6 +452,11 @@ export class Connection
                 type: Sequelize.INTEGER,
                 allowNull: true,
                 defaultValue: 1
+            },
+            isStartPoint: {
+                type: Sequelize.BOOLEAN,
+                allowNull: false,
+                defaultValue: false
             }
         });
 

@@ -66,7 +66,8 @@ class Connection {
                 locationTypeId: 1,
                 statusId: 1,
                 positionId: 1,
-                ipAddress: '0.0.0.0'
+                ipAddress: '0.0.0.0',
+                isStartPoint: true
             }).then(() => {
                 this._location.create({
                     id: 100,
@@ -238,9 +239,7 @@ class Connection {
                 });
             });
         }).then(this._settings.findById(1).then(result => this._currentSettings = result));
-        /*
-        this._sequelize.sync().then( this._settings.findById(1).then(result => this._currentSettings = result));
-        */
+        // this._sequelize.sync().then( this._settings.findById(1).then(result => this._currentSettings = result));
     }
     static getInstance() {
         if (Connection._instance === null || Connection._instance === undefined) {
@@ -388,6 +387,11 @@ class Connection {
                 type: Sequelize.INTEGER,
                 allowNull: true,
                 defaultValue: 1
+            },
+            isStartPoint: {
+                type: Sequelize.BOOLEAN,
+                allowNull: false,
+                defaultValue: false
             }
         });
         this._neighbor = this._sequelize.define('neighbor', {
