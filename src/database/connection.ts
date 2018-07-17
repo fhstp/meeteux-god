@@ -60,6 +60,16 @@ export class Connection
                 description: 'door'
             });
 
+            this._locationType.create({
+                id: 6,
+                description: 'activeExhibitBehaviorAt'
+            });
+
+            this._locationType.create({
+                id: 7,
+                description: 'activeExhibitBehaviorOn'
+            });
+
             this._contentType.create({
                 description: 'webContent'
             });
@@ -155,6 +165,32 @@ export class Connection
                         contentURL: 'tableon',
                         ipAddress: '0.0.0.0',
                         locationTypeId: 2,
+                        contentTypeId: 1,
+                        statusId: 3,
+                        positionId: 1
+                    });
+                });
+
+                this._location.create({
+                    id: 101,
+                    parentId: 10,
+                    description: 'Table2 atExhibitBehavior',
+                    contentURL: 'tableat',
+                    ipAddress: '192.168.8.252',
+                    locationTypeId: 6,
+                    contentTypeId: 1,
+                    statusId: 3,
+                    positionId: 1,
+                    currentSeat: 0,
+                    maxSeat: 15
+                }).then( () => {
+                    this._location.create({
+                        id: 1013,
+                        description: 'Table2 onExhibitBehavior',
+                        parentId: 101,
+                        contentURL: 'tableon',
+                        ipAddress: '0.0.0.0',
+                        locationTypeId: 7,
                         contentTypeId: 1,
                         statusId: 3,
                         positionId: 1

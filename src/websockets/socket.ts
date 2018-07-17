@@ -89,7 +89,6 @@ export class WebSocket
             });
 
             socket.on('autoLoginOD', (data) => {
-                console.log(data);
                 jwt.verify(data, process.env.SECRET, (err, decoded) =>
                 {
                     if(err) return {data: null, message: new Message(INVALID_TOKEN, "Invalid token!")};

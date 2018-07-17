@@ -21,6 +21,9 @@ class LocationController {
                     this.database.location.update({ currentSeat: this.database.sequelize.literal('currentSeat +1') }, { where: { id: currentLocation.parentId } });
                     this.database.location.update({ statusId: 4 }, { where: { id: currentLocation.id } });
                 }
+                else if (currentLocation.locationTypeId === 7) {
+                    this.database.location.update({ currentSeat: this.database.sequelize.literal('currentSeat +1') }, { where: { id: currentLocation.parentId } });
+                }
             });
         }).then(() => {
             return { data: location, message: new messages_1.Message(messages_1.SUCCESS_OK, 'Location Registered successfully') };
@@ -54,9 +57,11 @@ class LocationController {
         let status = "NOT FOUND";
         return this.database.location.findById(locationId).then((location) => {
             //console.log(location);
-            if (location.locationTypeId != 3 && location.locationTypeId != 2)
+            if (location.locationTypeId != 3 && location.locationTypeId != 2 && location.locationTypeId != 6 && location.locationTypeId != 7)
                 status = "NOT ACTIVE EXHIBIT";
             else if (location.locationTypeId === 3 && location.statusId === 3 && location.currentSeat < location.maxSeat)
+                status = "FREE";
+            else if (location.locationTypeId === 6 && location.statusId === 3 && location.currentSeat < location.maxSeat)
                 status = "FREE";
             else if (location.locationTypeId === 2 && location.statusId === 3)
                 status = "FREE";
