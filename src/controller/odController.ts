@@ -13,6 +13,29 @@ export class OdController
         this.database = Connection.getInstance();
     }
 
+    private getLookupTable(user: number): any
+    {
+        return this.database.location.findAll().then( (locations) =>
+        {
+            return this.database.activity.findAll({where: {userId: user, liked: true}}).then( (activities) =>
+            {
+                for(let loc of locations)
+                {
+                    loc.dataValues.liked = false;
+                    for(let act of activities)
+                    {
+                        if(loc.id === act.locationId)
+                        {
+                            loc.dataValues.liked = true;
+                        }
+                    }
+                }
+
+                return locations;
+            });
+        });
+    }
+
     public registerOD(data: any): any
     {
         const identifier: string = data.identifier;
@@ -31,7 +54,8 @@ export class OdController
             deviceModel: deviceModel,
             ipAddress: 'not set'
         }).then( (user) => {
-            return this.database.location.findAll().then( (locations) => {
+            return this.getLookupTable(user.id).then( (locations) =>
+            {
                 return {data: {user, locations}, message: new Message(SUCCESS_CREATED, "User created successfully")};
             });
         }).catch(() => {
@@ -58,7 +82,7 @@ export class OdController
             deviceModel: deviceModel,
             ipAddress: 'not set'
         }).then( (user) => {
-            return this.database.location.findAll().then( (locations) => {
+            return this.getLookupTable(user.id).then( (locations) => {
                 return {data: {user, locations}, message: new Message(SUCCESS_CREATED, "User created successfully")};
             });
         }).catch(() => {
@@ -76,7 +100,7 @@ export class OdController
     public autoLoginUser(identifier: any): any
     {
         return this.database.user.findById(identifier).then( user => {
-            return this.database.location.findAll().then( (locations) => {
+            return this.getLookupTable(user.id).then( (locations) => {
                 return {data: {user, locations}, message: new Message(SUCCESS_LOGGED_IN, "User logged in successfully")};
             });
         }).catch(() => {
@@ -91,7 +115,7 @@ export class OdController
 
         return this.database.user.findOne({where: {name: user, password: password}}).then( (user) =>
         {
-            return this.database.location.findAll().then( (locations) => {
+            return this.getLookupTable(user.id).then( (locations) => {
                 return {data: {user, locations}, message: new Message(SUCCESS_LOGGED_IN, "User logged in successfully")};
             });
         }).catch(() => {

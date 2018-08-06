@@ -4,7 +4,7 @@ require('dotenv').config();
 export class Connection
 {
     private static _instance: Connection;
-    private _sequelize: any;
+    private readonly _sequelize: any;
     private _user: any;
     private _group: any;
     private _location: any;
@@ -114,10 +114,11 @@ export class Connection
                     parentId: 10,
                     description: 'Table1 atExhibit',
                     contentURL: 'tableat',
-                    ipAddress: '192.168.8.253',
+                    // ipAddress: '192.168.8.253',
+                    ipAddress: 'localhost',
                     locationTypeId: 3,
                     contentTypeId: 1,
-                    statusId: 3,
+                    statusId: 2,
                     positionId: 1,
                     currentSeat: 0,
                     maxSeat: 4
@@ -130,7 +131,7 @@ export class Connection
                         ipAddress: '0.0.0.0',
                         locationTypeId: 2,
                         contentTypeId: 1,
-                        statusId: 3,
+                        statusId: 2,
                         positionId: 1
                     });
 
@@ -142,7 +143,7 @@ export class Connection
                         ipAddress: '0.0.0.0',
                         locationTypeId: 2,
                         contentTypeId: 1,
-                        statusId: 3,
+                        statusId: 2,
                         positionId: 1
                     });
 
@@ -154,7 +155,7 @@ export class Connection
                         ipAddress: '0.0.0.0',
                         locationTypeId: 2,
                         contentTypeId: 1,
-                        statusId: 3,
+                        statusId: 2,
                         positionId: 1
                     });
 
@@ -166,7 +167,7 @@ export class Connection
                         ipAddress: '0.0.0.0',
                         locationTypeId: 2,
                         contentTypeId: 1,
-                        statusId: 3,
+                        statusId: 2,
                         positionId: 1
                     });
                 });
@@ -179,7 +180,7 @@ export class Connection
                     ipAddress: '192.168.8.252',
                     locationTypeId: 6,
                     contentTypeId: 1,
-                    statusId: 3,
+                    statusId: 2,
                     positionId: 1,
                     currentSeat: 0,
                     maxSeat: 15
@@ -192,7 +193,7 @@ export class Connection
                         ipAddress: '0.0.0.0',
                         locationTypeId: 7,
                         contentTypeId: 1,
-                        statusId: 3,
+                        statusId: 2,
                         positionId: 1
                     });
                 });
@@ -557,6 +558,14 @@ export class Connection
             timestamp: {
                 type: Sequelize.DATE,
                 allowNull: false
+            },
+            liked: {
+                type: Sequelize.BOOLEAN,
+                defaultValue: false
+            },
+            viewed: {
+                type: Sequelize.BOOLEAN,
+                defaultValue: false
             }
         });
     }

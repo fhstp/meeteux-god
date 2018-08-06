@@ -160,6 +160,14 @@ export class WebSocket
                 });
             });
 
+            socket.on('registerLocationLike', (data) =>
+            {
+                this.locationController.registerLocationLike(data).then( (message) =>
+                {
+                    socket.emit('registerLocationLikeResult', message);
+                });
+            });
+
             socket.on('disconnectedFromExhibit', (data) =>
             {
                 console.log('disconnectedFromExhibit');

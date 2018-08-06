@@ -1,6 +1,15 @@
 
 import { Connection } from '../database';
-import {Message, LOCATION_NOT_FOUND, SUCCESS_OK, LOCATION_NOT_UPDATED, LOCATION_NOT_CREATED} from '../messages';
+import {
+    Message,
+    LOCATION_NOT_FOUND,
+    SUCCESS_OK,
+    LOCATION_NOT_UPDATED,
+    LOCATION_NOT_CREATED,
+    SUCCESS_CREATED
+} from '../messages';
+import * as statusTypes from '../config/statusTypes';
+import * as locationTypes from '../config/locationTypes';
 
 export class LocationController
 {
@@ -25,12 +34,14 @@ export class LocationController
         }).then( () => {
             this.database.location.findById(location).then( (currentLocation) =>
             {
-                if (currentLocation.locationTypeId === 2)
+                if (currentLocation.locationTypeId === locationTypes.ACTIVE_EXHIBIT_ON)
                 {
-                    this.database.location.update({currentSeat:this.database.sequelize.literal('currentSeat +1')}, {where: {id: currentLocation.parentId}});
-                    this.database.location.update({statusId: 4}, {where: {id: currentLocation.id}});
+                    this.database.location.update({currentSeat:this.database.sequelize.literal('currentSeat +1')}, {where: {id: currentLocation.parentId}}).then(() => {
+                        this.database.location.update({statusId: statusTypes.OCCUPIED}, {where: {id: currentLocation.parentId, }})
+                    });
+                    this.database.location.update({statusId: statusTypes.OCCUPIED}, {where: {id: currentLocation.id}});
                 }
-                else if (currentLocation.locationTypeId === 7)
+                else if (currentLocation.locationTypeId === locationTypes.ACTIVE_EXHIBIT_BEHAVIOR_ON)
                 {
                     this.database.location.update({currentSeat:this.database.sequelize.literal('currentSeat +1')}, {where: {id: currentLocation.parentId}});
                 }
@@ -43,12 +54,54 @@ export class LocationController
         });
     }
 
+    public registerLocationLike(data: any): any
+    {
+        const user: number = data.user;
+        const location: number = data.location;
+        const like: boolean = data.like;
+
+        console.log('registerLocationLike');
+
+        return this.database.activity.update({liked:like}, {where: {userId: user, locationId: location}}).then( () =>
+        {
+            return this.getLookupTable(user).then( (locations) =>
+            {
+                return {data: {locations}, message: new Message(SUCCESS_OK, "Activity updated successfully")};
+            });
+        }).catch(() => {
+            return {data: null, message: new Message(LOCATION_NOT_UPDATED, 'Could not update activity')};
+        });
+    }
+
+    private getLookupTable(user: number): any
+    {
+        return this.database.location.findAll().then( (locations) =>
+        {
+            return this.database.activity.findAll({where: {userId: user, liked: true}}).then( (activities) =>
+            {
+                for(let loc of locations)
+                {
+                    loc.dataValues.liked = false;
+                    for(let act of activities)
+                    {
+                        if(loc.id === act.locationId)
+                        {
+                            loc.dataValues.liked = true;
+                        }
+                    }
+                }
+
+                return locations;
+            });
+        });
+    }
+
     public disconnectedFromExhibit(data: any): any
     {
         const parentLocation: number = data.parentLocation;
         const location: number = data.location;
 
-        return this.database.location.update({statusId: 3}, {where: {id: location}}).then( () => {
+        return this.database.location.update({statusId: statusTypes.FREE}, {where: {id: location}}).then( () => {
             return this.database.location.update({currentSeat: this.database.sequelize.literal('currentSeat -1')}, {where: {id: parentLocation}});
         }).then( () => {
             return {data: {location, parent: parentLocation}, message: new Message(SUCCESS_OK, 'Disconnected successfully from Exhibit')};
@@ -77,16 +130,16 @@ export class LocationController
         return this.database.location.findById(locationId).then( (location) =>
         {
             //console.log(location);
-            if(location.locationTypeId != 3 && location.locationTypeId != 2 && location.locationTypeId != 6 && location.locationTypeId != 7)
+            if(location.locationTypeId != locationTypes.ACTIVE_EXHIBIT_ON && location.locationTypeId != locationTypes.ACTIVE_EXHIBIT_AT && location.locationTypeId != locationTypes.ACTIVE_EXHIBIT_BEHAVIOR_ON && location.locationTypeId != locationTypes.ACTIVE_EXHIBIT_BEHAVIOR_AT)
                 status = "NOT ACTIVE EXHIBIT";
 
-            else if(location.locationTypeId === 3 && location.statusId === 3 && location.currentSeat < location.maxSeat)
+            else if(location.locationTypeId === locationTypes.ACTIVE_EXHIBIT_AT && location.statusId === statusTypes.FREE && location.currentSeat < location.maxSeat)
                 status = "FREE";
 
-            else if(location.locationTypeId === 6 && location.statusId === 3 && location.currentSeat < location.maxSeat)
+            else if(location.locationTypeId === locationTypes.ACTIVE_EXHIBIT_BEHAVIOR_AT && location.statusId === statusTypes.FREE && location.currentSeat < location.maxSeat)
                 status = "FREE";
 
-            else if(location.locationTypeId === 2 && location.statusId === 3)
+            else if(location.locationTypeId === locationTypes.ACTIVE_EXHIBIT_ON && location.statusId === statusTypes.FREE)
                 status = "FREE";
 
             else
