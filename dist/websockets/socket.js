@@ -61,18 +61,20 @@ class WebSocket {
             });
             socket.on('autoLoginOD', (data) => {
                 jwt.verify(data, process.env.SECRET, (err, decoded) => {
-                    if (err)
+                    if (err || !decoded)
                         return { data: null, message: new messages_1.Message(authenticationTypes_1.INVALID_TOKEN, "Invalid token!") };
                     const user = decoded.user;
                     if (user) {
                         this.odController.autoLoginUser(user.id).then((result) => {
-                            const user = result.data.user;
-                            const locations = result.data.locations;
-                            // Generate token
-                            const token = jwt.sign({ user }, process.env.SECRET);
-                            // Add token to result and to the socket connection
-                            result.data = { token, user, locations };
-                            socket.token = token;
+                            if (result.message.code <= 299) {
+                                const user = result.data.user;
+                                const locations = result.data.locations;
+                                // Generate token
+                                const token = jwt.sign({ user }, process.env.SECRET);
+                                // Add token to result and to the socket connection
+                                result.data = { token, user, locations };
+                                socket.token = token;
+                            }
                             socket.emit('autoLoginODResult', result);
                         });
                     }
@@ -128,7 +130,6 @@ class WebSocket {
                 });
             });
             socket.on('loginExhibit', (ipAddress) => {
-                console.log("Logging in exhibit " + ipAddress);
                 this.exhibitController.loginExhibit(ipAddress).then((message) => {
                     socket.emit('loginExhibitResult', message);
                 });

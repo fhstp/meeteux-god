@@ -563,7 +563,7 @@ export class Connection
                 type: Sequelize.BOOLEAN,
                 defaultValue: false
             },
-            viewed: {
+            dismissed: {
                 type: Sequelize.BOOLEAN,
                 defaultValue: false
             }

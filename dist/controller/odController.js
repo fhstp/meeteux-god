@@ -76,6 +76,8 @@ class OdController {
     }
     autoLoginUser(identifier) {
         return this.database.user.findById(identifier).then(user => {
+            if (!user)
+                throw new Error('User not found');
             return this.getLookupTable(user.id).then((locations) => {
                 return { data: { user, locations }, message: new messages_1.Message(messages_1.SUCCESS_LOGGED_IN, "User logged in successfully") };
             });

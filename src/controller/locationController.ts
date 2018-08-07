@@ -24,31 +24,28 @@ export class LocationController
     {
         const user: number = data.user;
         const location: number = data.location;
+        const dismissed: boolean = data.dismissed;
 
         return this.database.activity.create({
             userId: user,
             locationId: location,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            dismissed
         }).then(() => {
             this.database.user.update({currentLocation:location}, {where: {id: user}});
-        }).then( () => {
-            this.database.location.findById(location).then( (currentLocation) =>
-            {
-                if (currentLocation.locationTypeId === locationTypes.ACTIVE_EXHIBIT_ON)
-                {
-                    this.database.location.update({currentSeat:this.database.sequelize.literal('currentSeat +1')}, {where: {id: currentLocation.parentId}}).then(() => {
-                        this.database.location.update({statusId: statusTypes.OCCUPIED}, {where: {id: currentLocation.parentId, }})
+            if(!dismissed) {
+                this.database.location.findById(location).then((currentLocation) => {
+                    this.database.location.update({currentSeat: this.database.sequelize.literal('currentSeat +1')}, {where: {id: currentLocation.parentId}}).then(() => {
+                        if (currentLocation.locationTypeId === locationTypes.ACTIVE_EXHIBIT_ON) {
+                            this.database.location.update({statusId: statusTypes.OCCUPIED}, {where: {id: currentLocation.id}});
+                        }
+                        this.updateActiveLocationStatus(currentLocation.parentId);
                     });
-                    this.database.location.update({statusId: statusTypes.OCCUPIED}, {where: {id: currentLocation.id}});
-                }
-                else if (currentLocation.locationTypeId === locationTypes.ACTIVE_EXHIBIT_BEHAVIOR_ON)
-                {
-                    this.database.location.update({currentSeat:this.database.sequelize.literal('currentSeat +1')}, {where: {id: currentLocation.parentId}});
-                }
-            });
+                });
+            }
         }).then( () =>
         {
-            return {data: location, message: new Message(SUCCESS_OK, 'Location Registered successfully')};
+            return {data: { location, dismissed }, message: new Message(SUCCESS_OK, 'Location Registered successfully')};
         }).catch(() => {
             return {data: null, message: new Message(LOCATION_NOT_UPDATED, 'Could not register location')};
         });
@@ -129,7 +126,7 @@ export class LocationController
         let status: String = "NOT FOUND";
         return this.database.location.findById(locationId).then( (location) =>
         {
-            //console.log(location);
+            // console.log("CheckLocationStatus:\n-typeId: " + location.locationTypeId + "\n-statusId: " + location.statusId);
             if(location.locationTypeId != locationTypes.ACTIVE_EXHIBIT_ON && location.locationTypeId != locationTypes.ACTIVE_EXHIBIT_AT && location.locationTypeId != locationTypes.ACTIVE_EXHIBIT_BEHAVIOR_ON && location.locationTypeId != locationTypes.ACTIVE_EXHIBIT_BEHAVIOR_AT)
                 status = "NOT ACTIVE EXHIBIT";
 
@@ -148,6 +145,27 @@ export class LocationController
             return {data: {status, location: locationId} , message: new Message(SUCCESS_OK, "Status queried successfully")};
         }).catch(() => {
             return {data: null, message: new Message(LOCATION_NOT_FOUND, "Could not find location")};
+        });
+    }
+
+    public updateActiveLocationStatus(locationId: number): any
+    {
+        return this.database.location.findById(locationId).then( (location) =>
+        {
+            if(location.locationTypeId === locationTypes.ACTIVE_EXHIBIT_AT || location.locationTypeId === locationTypes.ACTIVE_EXHIBIT_BEHAVIOR_AT)
+            {
+                if(location.currentSeat < location.maxSeat && location.statusId === statusTypes.OCCUPIED)
+                {
+                    location.statusId = statusTypes.FREE;
+                }
+
+                else if(location.currentSeat >= location.maxSeat && location.statusId === statusTypes.FREE)
+                {
+                    location.statusId = statusTypes.OCCUPIED;
+                }
+
+                location.save();
+            }
         });
     }
 }
