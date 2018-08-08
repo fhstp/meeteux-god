@@ -139,6 +139,9 @@ export class LocationController
             else if(location.locationTypeId === locationTypes.ACTIVE_EXHIBIT_ON && location.statusId === statusTypes.FREE)
                 status = "FREE";
 
+            else if(location.statusId === statusTypes.OFFLINE)
+                status = "OFFLINE";
+
             else
                 status = "OCCUPIED";
 
