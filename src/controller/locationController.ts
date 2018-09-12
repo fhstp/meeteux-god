@@ -99,7 +99,9 @@ export class LocationController
         const location: number = data.location;
 
         return this.database.location.update({statusId: statusTypes.FREE}, {where: {id: location}}).then( () => {
-            return this.database.location.update({currentSeat: this.database.sequelize.literal('currentSeat -1')}, {where: {id: parentLocation}});
+            return this.database.location.update({currentSeat: this.database.sequelize.literal('currentSeat -1')}, {where: {id: parentLocation}}).then(() => {
+                this.updateActiveLocationStatus(parentLocation);
+            });
         }).then( () => {
             return {data: {location, parent: parentLocation}, message: new Message(SUCCESS_OK, 'Disconnected successfully from Exhibit')};
         }).catch(() => {
