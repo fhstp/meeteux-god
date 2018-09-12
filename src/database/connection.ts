@@ -23,7 +23,7 @@ export class Connection
         this._sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
             host: 'localhost',
             dialect: 'mysql',
-            logging: false
+            logging: true
         });
         this.initDatabaseTables();
         this.initDatabaseRelations();
@@ -411,6 +411,11 @@ export class Connection
         });
 
         this._user = this._sequelize.define('user', {
+            'id': {
+                primaryKey: true,
+                type: Sequelize.UUID,
+                defaultValue: Sequelize.UUIDV4,
+            },
             name: {
                 type: Sequelize.STRING,
                 allowNull: false
