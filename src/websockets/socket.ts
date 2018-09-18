@@ -91,7 +91,11 @@ export class WebSocket
             socket.on('autoLoginOD', (data) => {
                 jwt.verify(data, process.env.SECRET, (err, decoded) =>
                 {
-                    if(err || !decoded) return {data: null, message: new Message(INVALID_TOKEN, "Invalid token!")};
+                    if(err || !decoded)
+                    {
+                        socket.emit('autoLoginODResult', {data: null, message: new Message(INVALID_TOKEN, "Invalid token!")});
+                        return;
+                    }
 
                     const user = decoded.user;
 
