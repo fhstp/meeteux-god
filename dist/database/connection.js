@@ -12,6 +12,9 @@ class Connection {
         this.initDatabaseTables();
         this.initDatabaseRelations();
         this._sequelize.sync({ force: true }).then(() => {
+            this._settings.create({
+                guestNumber: 1
+            });
             this._locationType.create({
                 id: 1,
                 description: 'room'
@@ -31,6 +34,14 @@ class Connection {
             this._locationType.create({
                 id: 5,
                 description: 'door'
+            });
+            this._locationType.create({
+                id: 6,
+                description: 'activeExhibitBehaviorAt'
+            });
+            this._locationType.create({
+                id: 7,
+                description: 'activeExhibitBehaviorOn'
             });
             this._contentType.create({
                 description: 'webContent'
@@ -63,17 +74,19 @@ class Connection {
                 locationTypeId: 1,
                 statusId: 1,
                 positionId: 1,
-                ipAddress: '0.0.0.0'
+                ipAddress: '0.0.0.0',
+                isStartPoint: true
             }).then(() => {
                 this._location.create({
                     id: 100,
                     parentId: 10,
                     description: 'Table1 atExhibit',
                     contentURL: 'tableat',
-                    ipAddress: '192.168.8.253',
+                    ipAddress: '192.168.178.253',
+                    // ipAddress: 'localhost',
                     locationTypeId: 3,
                     contentTypeId: 1,
-                    statusId: 3,
+                    statusId: 2,
                     positionId: 1,
                     currentSeat: 0,
                     maxSeat: 4
@@ -86,7 +99,7 @@ class Connection {
                         ipAddress: '0.0.0.0',
                         locationTypeId: 2,
                         contentTypeId: 1,
-                        statusId: 3,
+                        statusId: 2,
                         positionId: 1
                     });
                     this._location.create({
@@ -97,7 +110,7 @@ class Connection {
                         ipAddress: '0.0.0.0',
                         locationTypeId: 2,
                         contentTypeId: 1,
-                        statusId: 3,
+                        statusId: 2,
                         positionId: 1
                     });
                     this._location.create({
@@ -108,7 +121,7 @@ class Connection {
                         ipAddress: '0.0.0.0',
                         locationTypeId: 2,
                         contentTypeId: 1,
-                        statusId: 3,
+                        statusId: 2,
                         positionId: 1
                     });
                     this._location.create({
@@ -119,7 +132,32 @@ class Connection {
                         ipAddress: '0.0.0.0',
                         locationTypeId: 2,
                         contentTypeId: 1,
-                        statusId: 3,
+                        statusId: 2,
+                        positionId: 1
+                    });
+                });
+                this._location.create({
+                    id: 101,
+                    parentId: 10,
+                    description: 'Table2 atExhibitBehavior',
+                    contentURL: 'tableat',
+                    ipAddress: '192.168.178.48',
+                    locationTypeId: 6,
+                    contentTypeId: 1,
+                    statusId: 2,
+                    positionId: 1,
+                    currentSeat: 0,
+                    maxSeat: 15
+                }).then(() => {
+                    this._location.create({
+                        id: 1013,
+                        description: 'Table2 onExhibitBehavior',
+                        parentId: 101,
+                        contentURL: 'tableon',
+                        ipAddress: '0.0.0.0',
+                        locationTypeId: 7,
+                        contentTypeId: 1,
+                        statusId: 2,
                         positionId: 1
                     });
                 });
@@ -234,8 +272,8 @@ class Connection {
                     positionId: 1
                 });
             });
-        });
-        //this._sequelize.sync();
+        }).then(this._settings.findById(1).then(result => this._currentSettings = result));
+        // this._sequelize.sync().then( this._settings.findById(1).then(result => this._currentSettings = result));
     }
     static getInstance() {
         if (Connection._instance === null || Connection._instance === undefined) {
@@ -301,10 +339,29 @@ class Connection {
         this._location.belongsTo(this._position, { foreignKey: { allowNull: false } });
     }
     initDatabaseTables() {
+        this._settings = this._sequelize.define('setting', {
+            guestNumber: {
+                type: Sequelize.INTEGER
+            }
+        });
         this._user = this._sequelize.define('user', {
+            'id': {
+                primaryKey: true,
+                type: Sequelize.UUID,
+                defaultValue: Sequelize.UUIDV4,
+            },
             name: {
                 type: Sequelize.STRING,
                 allowNull: false
+            },
+            password: {
+                type: Sequelize.STRING,
+                allowNull: true
+            },
+            isGuest: {
+                type: Sequelize.BOOLEAN,
+                allowNull: false,
+                defaultValue: true
             },
             currentLocation: {
                 type: Sequelize.INTEGER,
@@ -369,6 +426,11 @@ class Connection {
                 type: Sequelize.INTEGER,
                 allowNull: true,
                 defaultValue: 1
+            },
+            isStartPoint: {
+                type: Sequelize.BOOLEAN,
+                allowNull: false,
+                defaultValue: false
             }
         });
         this._neighbor = this._sequelize.define('neighbor', {
@@ -427,8 +489,22 @@ class Connection {
             timestamp: {
                 type: Sequelize.DATE,
                 allowNull: false
+            },
+            liked: {
+                type: Sequelize.BOOLEAN,
+                defaultValue: false
+            },
+            dismissed: {
+                type: Sequelize.BOOLEAN,
+                defaultValue: false
             }
         });
+    }
+    getNextGuestNumber() {
+        const numb = this._currentSettings.guestNumber;
+        this._currentSettings.guestNumber = numb + 1;
+        this._currentSettings.save();
+        return numb;
     }
     get activity() {
         return this._activity;
@@ -456,6 +532,9 @@ class Connection {
     }
     get neighbor() {
         return this._neighbor;
+    }
+    get currentSettings() {
+        return this._currentSettings;
     }
     get sequelize() {
         return this._sequelize;

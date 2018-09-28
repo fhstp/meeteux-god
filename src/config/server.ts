@@ -25,8 +25,7 @@ export default class Server
 
         this.app.get('/', function (req, res)
         {
-            console.log(process.env.NODE_PATH);
-            res.sendFile(process.env.NODE_PATH + '/assets/godIndex.html');
+            res.sendFile(process.env.NODE_PATH + '/assets/localIndex.html');
         });
     }
 
