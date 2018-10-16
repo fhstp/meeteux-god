@@ -1,10 +1,15 @@
 import * as Sequelize from 'sequelize';
+import * as CLS from 'continuation-local-storage';
+import {DataFactory} from "./dataFactory";
+import * as Winston from 'winston';
+import Logger from "../config/logger";
 require('dotenv').config();
 
 export class Connection
 {
     private static _instance: Connection;
     private readonly _sequelize: any;
+    private readonly _namespace: any;
     private _user: any;
     private _group: any;
     private _location: any;
@@ -20,303 +25,26 @@ export class Connection
 
     private constructor()
     {
+        this._namespace = CLS.createNamespace('MEETeUX');
+        Sequelize.useCLS(this._namespace);
         this._sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
             host: 'localhost',
             dialect: 'mysql',
-            logging: true
+            operatorsAliases: { $and: Sequelize.Op.and },
+            logging: false
         });
+
         this.initDatabaseTables();
         this.initDatabaseRelations();
 
+        const dataFactory = new DataFactory();
+        dataFactory.connection = this;
 
-        this._sequelize.sync({force: true}).then(() => {
-
-            this._settings.create({
-                guestNumber: 1
-            });
-
-            this._locationType.create({
-                id: 1,
-                description: 'room'
-            });
-
-            this._locationType.create({
-                id: 2,
-                description: 'activeExhibitOn'
-            });
-
-            this._locationType.create({
-                id: 3,
-                description: 'activeExhibitAt'
-            });
-
-            this._locationType.create({
-                id: 4,
-                description: 'passiveExhibit'
-            });
-
-            this._locationType.create({
-                id: 5,
-                description: 'door'
-            });
-
-            this._locationType.create({
-                id: 6,
-                description: 'activeExhibitBehaviorAt'
-            });
-
-            this._locationType.create({
-                id: 7,
-                description: 'activeExhibitBehaviorOn'
-            });
-
-            this._contentType.create({
-                description: 'webContent'
-            });
-
-            this._status.create({
-                id: 1,
-               description: 'online'
-            });
-
-            this._status.create({
-                id: 2,
-                description: 'offline'
-            });
-
-            this._status.create({
-                id: 3,
-                description: 'free'
-            });
-
-            this._status.create({
-                id: 4,
-               description: 'occupied'
-            });
-
-            this._position.create({
-                longitude: 12,
-                latitude: 25,
-                floor: 1
-            });
-        }).then( () => {
-            this.location.create({
-                id: 10,
-                description: 'Büro',
-                locationTypeId: 1,
-                statusId: 1,
-                positionId: 1,
-                ipAddress: '0.0.0.0',
-                isStartPoint: true
-            }).then ( () => {
-                this._location.create({
-                    id: 100,
-                    parentId: 10,
-                    description: 'Table1 atExhibit',
-                    contentURL: 'tableat',
-                    ipAddress: '192.168.178.253',
-                    // ipAddress: 'localhost',
-                    locationTypeId: 3,
-                    contentTypeId: 1,
-                    statusId: 2,
-                    positionId: 1,
-                    currentSeat: 0,
-                    maxSeat: 4
-                }).then( () => {
-                    this._location.create({
-                        id: 1000,
-                        description: 'Table1 onExhibit-1',
-                        parentId:100,
-                        contentURL: 'tableon',
-                        ipAddress: '0.0.0.0',
-                        locationTypeId: 2,
-                        contentTypeId: 1,
-                        statusId: 2,
-                        positionId: 1
-                    });
-
-                    this._location.create({
-                        id: 1001,
-                        description: 'Table1 onExhibit-2',
-                        parentId:100,
-                        contentURL: 'tableon',
-                        ipAddress: '0.0.0.0',
-                        locationTypeId: 2,
-                        contentTypeId: 1,
-                        statusId: 2,
-                        positionId: 1
-                    });
-
-                    this._location.create({
-                        id: 1002,
-                        description: 'Table1 onExhibit-3',
-                        parentId:100,
-                        contentURL: 'tableon',
-                        ipAddress: '0.0.0.0',
-                        locationTypeId: 2,
-                        contentTypeId: 1,
-                        statusId: 2,
-                        positionId: 1
-                    });
-
-                    this._location.create({
-                        id: 1003,
-                        description: 'Table1 onExhibit-4',
-                        parentId:100,
-                        contentURL: 'tableon',
-                        ipAddress: '0.0.0.0',
-                        locationTypeId: 2,
-                        contentTypeId: 1,
-                        statusId: 2,
-                        positionId: 1
-                    });
-                });
-
-                this._location.create({
-                    id: 101,
-                    parentId: 10,
-                    description: 'Table2 atExhibitBehavior',
-                    contentURL: 'tableat',
-                    ipAddress: '192.168.178.48',
-                    locationTypeId: 6,
-                    contentTypeId: 1,
-                    statusId: 2,
-                    positionId: 1,
-                    currentSeat: 0,
-                    maxSeat: 15
-                }).then( () => {
-                    this._location.create({
-                        id: 1013,
-                        description: 'Table2 onExhibitBehavior',
-                        parentId: 101,
-                        contentURL: 'tableon',
-                        ipAddress: '0.0.0.0',
-                        locationTypeId: 7,
-                        contentTypeId: 1,
-                        statusId: 2,
-                        positionId: 1
-                    });
-                });
-
-                this._location.create({
-                    id: 10000,
-                    parentId: 10,
-                    description: 'Door',
-                    contentURL: 'http://www.google.at',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 5,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-
-                this._location.create({
-                    id: 1004,
-                    parentId: 10,
-                    description: 'passive Exhibit1',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-
-                this._location.create({
-                    id: 1005,
-                    parentId: 10,
-                    description: 'passive Exhibit2',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-
-                this._location.create({
-                    id: 1006,
-                    parentId: 10,
-                    description: 'passive Exhibit3',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-
-                this._location.create({
-                    id: 1007,
-                    parentId: 10,
-                    description: 'passive Exhibit4',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-
-                this._location.create({
-                    id: 1008,
-                    parentId: 10,
-                    description: 'passive Exhibit5',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-
-                this._location.create({
-                    id: 1009,
-                    parentId: 10,
-                    description: 'passive Exhibit6',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-
-                this._location.create({
-                    id: 1010,
-                    parentId: 10,
-                    description: 'passive Exhibit7',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-
-                this._location.create({
-                    id: 1011,
-                    parentId: 10,
-                    description: 'passive Exhibit8',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-
-                this._location.create({
-                    id: 1012,
-                    parentId: 10,
-                    description: 'passive Exhibit9',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
+        this._sequelize.sync({force: true}).then(() =>
+        {
+            dataFactory.createData().catch(err =>
+            {
+                console.log("Could not create data!");
             });
         }).then( this._settings.findById(1).then(result => this._currentSettings = result));
 
@@ -398,8 +126,8 @@ export class Connection
         this._location.belongsTo(this._status, {foreignKey: {allowNull: false}});
 
         //_location to _position relation (1:n)
-        this._position.hasMany(this._location, {foreignKey: {allowNull: false}});
-        this._location.belongsTo(this._position, {foreignKey: {allowNull: false}});
+        this._position.hasMany(this._location, {foreignKey: {allowNull: true}});
+        this._location.belongsTo(this._position, {foreignKey: {allowNull: true}});
     }
 
     private initDatabaseTables():void
@@ -626,5 +354,9 @@ export class Connection
 
     get sequelize(): any {
         return this._sequelize;
+    }
+
+    get settings(): any {
+        return this._settings;
     }
 }
