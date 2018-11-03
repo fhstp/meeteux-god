@@ -34,7 +34,7 @@ export class WebSocket
                 const event: String = packet[0];
                 const token = socket.token;
 
-                if(event.localeCompare('registerOD') !== 0 && event.localeCompare('autoLoginOD') !== 0 && event.localeCompare('registerODGuest') !== 0 && event.localeCompare('disconnectedFromExhibit') !== 0 && event.localeCompare('loginExhibit') !== 0)
+                if(this.checkEventsNoTokenNeeded(event))
                 {
                     jwt.verify(token, process.env.SECRET, (err, decoded) =>
                     {
@@ -197,6 +197,14 @@ export class WebSocket
                });
             });
 
+            socket.on('checkUsernameExists', (name) =>
+            {
+               this.odController.checkUserNameExists(name).then(exists =>
+               {
+                   socket.emit('checkUsernameExistsResult', exists);
+               });
+            });
+
             socket.on('loginExhibit', (ipAddress) =>
             {
                 this.exhibitController.loginExhibit(ipAddress).then( (message) =>
@@ -214,5 +222,23 @@ export class WebSocket
         // TODO: Check with restricted events
 
         return ok;
+    }
+
+    private checkEventsNoTokenNeeded(event: String): boolean
+    {
+        let isOk = false;
+        switch (event)
+        {
+            case 'registerOD':
+            case 'autoLoginOD':
+            case 'loginOD':
+            case 'registerODGuest':
+            case 'disconnectedFromExhibit':
+            case 'checkUsernameExists':
+            case 'loginExhibit':
+                isOk = true;
+                break;
+        }
+        return isOk;
     }
 }

@@ -43,10 +43,14 @@ export class OdController
         const deviceOS: string = data.deviceOS;
         const deviceVersion: string = data.deviceVersion;
         const deviceModel: string = data.deviceModel;
+        const  email: string = data.email;
+        const pwd: string = data.password;
         //const ipAddress: string = data.ipAddress;
 
         return this.database.user.create({
             name: identifier,
+            email: email,
+            password: pwd,
             isGuest: false,
             deviceAddress: deviceAddress,
             deviceOS: deviceOS,
@@ -122,6 +126,14 @@ export class OdController
             });
         }).catch(() => {
             return {data: null, message: new Message(LOGIN_FAILED, "User not found!")}
-        });;
+        });
+    }
+
+    public checkUserNameExists(name: String): any
+    {
+        return this.database.user.count({ where: {name: name} }).then(count =>
+        {
+            return count != 0;
+        });
     }
 }

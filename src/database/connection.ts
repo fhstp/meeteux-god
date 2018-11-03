@@ -152,6 +152,9 @@ export class Connection
                 type: Sequelize.STRING,
                 allowNull: true
             },
+            email: {
+                type: Sequelize.STRING
+            },
             isGuest: {
                 type: Sequelize.BOOLEAN,
                 allowNull: false,
