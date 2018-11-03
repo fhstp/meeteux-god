@@ -17,16 +17,16 @@ export class OdController
     {
         return this.database.location.findAll().then( (locations) =>
         {
-            return this.database.activity.findAll({where: {userId: user, liked: true}}).then( (activities) =>
+            return this.database.activity.findAll({where: {userId: user}}).then( (activities) =>
             {
                 for(let loc of locations)
                 {
-                    loc.dataValues.liked = false;
                     for(let act of activities)
                     {
                         if(loc.id === act.locationId)
                         {
-                            loc.dataValues.liked = true;
+                            loc.dataValues.liked = act.liked;
+                            loc.dataValues.locked = act.locked;
                         }
                     }
                 }
@@ -47,23 +47,27 @@ export class OdController
         const pwd: string = data.password;
         //const ipAddress: string = data.ipAddress;
 
-        return this.database.user.create({
-            name: identifier,
-            email: email,
-            password: pwd,
-            isGuest: false,
-            deviceAddress: deviceAddress,
-            deviceOS: deviceOS,
-            deviceVersion: deviceVersion,
-            deviceModel: deviceModel,
-            ipAddress: 'not set'
-        }).then( (user) => {
-            return this.getLookupTable(user.id).then( (locations) =>
-            {
-                return {data: {user, locations}, message: new Message(SUCCESS_CREATED, "User created successfully")};
+        return this.database.sequelize.transaction( (t1) => {
+            return this.database.user.create({
+                name: identifier,
+                email: email,
+                password: pwd,
+                isGuest: false,
+                deviceAddress: deviceAddress,
+                deviceOS: deviceOS,
+                deviceVersion: deviceVersion,
+                deviceModel: deviceModel,
+                ipAddress: 'not set'
+            }).then((user) => {
+                return this.getLookupTable(user.id).then((locations) => {
+                    return {
+                        data: {user, locations},
+                        message: new Message(SUCCESS_CREATED, "User created successfully")
+                    };
+                });
+            }).catch(() => {
+                return {data: null, message: new Message(OD_NOT_CREATED, "Could not create user")};
             });
-        }).catch(() => {
-            return {data: null, message: new Message(OD_NOT_CREATED, "Could not create user")};
         });
     }
 
@@ -78,19 +82,24 @@ export class OdController
         const deviceModel: string = data.deviceModel;
         //const ipAddress: string = data.ipAddress;
 
-        return this.database.user.create({
-            name: identifier,
-            deviceAddress: deviceAddress,
-            deviceOS: deviceOS,
-            deviceVersion: deviceVersion,
-            deviceModel: deviceModel,
-            ipAddress: 'not set'
-        }).then( (user) => {
-            return this.getLookupTable(user.id).then( (locations) => {
-                return {data: {user, locations}, message: new Message(SUCCESS_CREATED, "User created successfully")};
+        return this.database.sequelize.transaction( (t1) => {
+            return this.database.user.create({
+                name: identifier,
+                deviceAddress: deviceAddress,
+                deviceOS: deviceOS,
+                deviceVersion: deviceVersion,
+                deviceModel: deviceModel,
+                ipAddress: 'not set'
+            }).then((user) => {
+                return this.getLookupTable(user.id).then((locations) => {
+                    return {
+                        data: {user, locations},
+                        message: new Message(SUCCESS_CREATED, "User created successfully")
+                    };
+                });
+            }).catch(() => {
+                return {data: null, message: new Message(OD_NOT_CREATED, "User could not be registered")};
             });
-        }).catch(() => {
-            return {data: null, message: new Message(OD_NOT_CREATED, "User could not be registered")};
         });
     }
 

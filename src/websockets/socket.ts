@@ -167,9 +167,9 @@ export class WebSocket
                 });
             });
 
-            socket.on('registerLocationLike', (data) =>
+            socket.on('updateLocationLike', (data) =>
             {
-                this.locationController.registerLocationLike(data).then( (message) =>
+                this.locationController.updateLocationLike(data).then( (message) =>
                 {
                     socket.emit('registerLocationLikeResult', message);
                 });

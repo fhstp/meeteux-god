@@ -18,6 +18,7 @@ export class Connection
     private _status: any;
     private _position: any;
     private _activity: any;
+    private _activityLog: any;
     private _neighbor:any;
     private _settings: any;
 
@@ -74,6 +75,10 @@ export class Connection
         this._activity.belongsTo(this._user, {foreignKey: {allowNull: false}});
         this._location.hasMany(this._activity, {onDelete: 'cascade', foreignKey: {allowNull: false}});
         this._activity.belongsTo(this._location, {foreignKey: {allowNull: false}});
+
+        //ActivityLog to Activity Relation (1:n)
+        this._activity.hasMany(this._activityLog, {onDelete: 'cascade'});
+        this._activityLog.belongsTo(this._activity);
 
         //_location to _location relation (1:n)
         this._location.hasMany(this._location, {onDelete: 'cascade', foreignKey: {
@@ -194,7 +199,7 @@ export class Connection
                 type: Sequelize.STRING,
                 allowNull: false
             }
-        })
+        });
 
         this._location = this._sequelize.define('location', {
             id: {
@@ -291,17 +296,21 @@ export class Connection
         });
 
         this._activity = this._sequelize.define('activity', {
-            timestamp: {
-                type: Sequelize.DATE,
-                allowNull: false
-            },
             liked: {
                 type: Sequelize.BOOLEAN,
                 defaultValue: false
             },
-            dismissed: {
+            locked: {
                 type: Sequelize.BOOLEAN,
-                defaultValue: false
+                defaultValue: true
+            }
+        });
+
+        this._activityLog = this._sequelize.define('activityLog', {
+            timestamp: {
+                type: Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW
             }
         });
     }
@@ -317,6 +326,10 @@ export class Connection
 
     get activity(): any {
         return this._activity;
+    }
+
+    get activityLog(): any {
+        return this._activityLog;
     }
 
     get user(): any {

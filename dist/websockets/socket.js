@@ -110,8 +110,8 @@ class WebSocket {
                     socket.emit('registerLocationResult', message);
                 });
             });
-            socket.on('registerLocationLike', (data) => {
-                this.locationController.registerLocationLike(data).then((message) => {
+            socket.on('updateLocationLike', (data) => {
+                this.locationController.updateLocationLike(data).then((message) => {
                     socket.emit('registerLocationLikeResult', message);
                 });
             });

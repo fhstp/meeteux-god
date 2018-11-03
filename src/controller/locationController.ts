@@ -22,51 +22,65 @@ export class LocationController
 
     public registerLocation(data: any): any
     {
-        const user: number = data.user;
-        const location: number = data.location;
+        const userId: number = data.user;
+        const locationId: number = data.location;
         const dismissed: boolean = data.dismissed;
 
-        return this.database.activity.create({
-            userId: user,
-            locationId: location,
-            timestamp: Date.now(),
-            dismissed
-        }).then(() => {
-            this.database.user.update({currentLocation:location}, {where: {id: user}});
-            if(!dismissed) {
+        return this.database.sequelize.transaction( (t1) => {
+            return this.database.activity.findOrCreate({
+                where: {userId, locationId},
+                defaults: {locked: dismissed}
+            }).spread((activity, wasCreated) => {
+                if(!wasCreated)
+                {
+                    activity.locked = dismissed;
+                    activity.save();
+                }
+
+                this.database.activityLog.create({activityId: activity.id});
+
+                if(dismissed)
+                    return {data: {location: locationId, dismissed}, message: new Message(SUCCESS_OK, 'Location Registered successfully')};
+
+                this.database.user.update({currentLocation: location}, {where: {id: userId}});
+
                 this.database.location.findById(location).then((currentLocation) => {
-                    this.database.location.update({currentSeat: this.database.sequelize.literal('currentSeat +1')}, {where: {id: currentLocation.parentId}}).then(() => {
-                        if (currentLocation.locationTypeId === locationTypes.ACTIVE_EXHIBIT_ON) {
-                            this.database.location.update({statusId: statusTypes.OCCUPIED}, {where: {id: currentLocation.id}});
-                        }
-                        this.updateActiveLocationStatus(currentLocation.parentId);
-                    });
+                    if (currentLocation.statusId === statusTypes.FREE && (currentLocation.locationTypeId === locationTypes.ACTIVE_EXHIBIT_ON || currentLocation.locationTypeId === locationTypes.ACTIVE_EXHIBIT_BEHAVIOR_ON)) {
+                        this.database.location.update({currentSeat: this.database.sequelize.literal('currentSeat +1')}, {where: {id: currentLocation.parentId}}).then(() => {
+                            if (currentLocation.locationTypeId === locationTypes.ACTIVE_EXHIBIT_ON)
+                                this.database.location.update({statusId: statusTypes.OCCUPIED}, {where: {id: currentLocation.id}});
+
+                            this.updateActiveLocationStatus(currentLocation.parentId);
+                        });
+                    }
                 });
-            }
-        }).then( () =>
-        {
-            return {data: { location, dismissed }, message: new Message(SUCCESS_OK, 'Location Registered successfully')};
-        }).catch(() => {
-            return {data: null, message: new Message(LOCATION_NOT_UPDATED, 'Could not register location')};
+            }).then(() => {
+                return {data: {location: locationId, dismissed}, message: new Message(SUCCESS_OK, 'Location Registered successfully')};
+            }).catch(() => {
+                return {data: null, message: new Message(LOCATION_NOT_UPDATED, 'Could not register location')};
+            });
         });
     }
 
-    public registerLocationLike(data: any): any
+    public updateLocationLike(data: any): any
     {
         const user: number = data.user;
         const location: number = data.location;
         const like: boolean = data.like;
 
-        console.log('registerLocationLike');
-
-        return this.database.activity.update({liked:like}, {where: {userId: user, locationId: location}}).then( () =>
-        {
-            return this.getLookupTable(user).then( (locations) =>
-            {
-                return {data: {locations}, message: new Message(SUCCESS_OK, "Activity updated successfully")};
+        return this.database.sequelize.transaction( (t1) => {
+            return this.database.activity.update({liked: like}, {
+                where: {
+                    userId: user,
+                    locationId: location
+                }
+            }).then(() => {
+                return this.getLookupTable(user).then((locations) => {
+                    return {data: {locations}, message: new Message(SUCCESS_OK, "Activity updated successfully")};
+                });
+            }).catch(() => {
+                return {data: null, message: new Message(LOCATION_NOT_UPDATED, 'Could not update activity')};
             });
-        }).catch(() => {
-            return {data: null, message: new Message(LOCATION_NOT_UPDATED, 'Could not update activity')};
         });
     }
 
@@ -74,16 +88,16 @@ export class LocationController
     {
         return this.database.location.findAll().then( (locations) =>
         {
-            return this.database.activity.findAll({where: {userId: user, liked: true}}).then( (activities) =>
+            return this.database.activity.findAll({where: {userId: user}}).then( (activities) =>
             {
                 for(let loc of locations)
                 {
-                    loc.dataValues.liked = false;
                     for(let act of activities)
                     {
                         if(loc.id === act.locationId)
                         {
-                            loc.dataValues.liked = true;
+                            loc.dataValues.liked = act.liked;
+                            loc.dataValues.locked = act.locked;
                         }
                     }
                 }
@@ -98,14 +112,20 @@ export class LocationController
         const parentLocation: number = data.parentLocation;
         const location: number = data.location;
 
-        return this.database.location.update({statusId: statusTypes.FREE}, {where: {id: location}}).then( () => {
-            return this.database.location.update({currentSeat: this.database.sequelize.literal('currentSeat -1')}, {where: {id: parentLocation}}).then(() => {
-                this.updateActiveLocationStatus(parentLocation);
+        return this.database.sequelize.transaction( (t1) =>
+        {
+            return this.database.location.update({statusId: statusTypes.FREE}, {where: {id: location}}).then(() => {
+                return this.database.location.update({currentSeat: this.database.sequelize.literal('currentSeat -1')}, {where: {id: parentLocation}}).then(() => {
+                    this.updateActiveLocationStatus(parentLocation);
+                });
+            }).then(() => {
+                return {
+                    data: {location, parent: parentLocation},
+                    message: new Message(SUCCESS_OK, 'Disconnected successfully from Exhibit')
+                };
+            }).catch(() => {
+                return {data: null, message: new Message(LOCATION_NOT_UPDATED, "Could not update location status")};
             });
-        }).then( () => {
-            return {data: {location, parent: parentLocation}, message: new Message(SUCCESS_OK, 'Disconnected successfully from Exhibit')};
-        }).catch(() => {
-            return {data: null, message: new Message(LOCATION_NOT_UPDATED, "Could not update location status")};
         });
     }
 
