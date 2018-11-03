@@ -140,6 +140,9 @@ export class Connection
         this._settings = this._sequelize.define('setting', {
             guestNumber: {
                 type: Sequelize.INTEGER
+            },
+            wifiSSID: {
+                type: Sequelize.STRING
             }
         });
 

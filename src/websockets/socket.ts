@@ -1,7 +1,7 @@
 import * as IO from 'socket.io';
 import * as jwt from 'jsonwebtoken';
 import  { Connection } from '../database';
-import { OdController, LocationController } from "../controller";
+import {OdController, LocationController, ConfigController} from "../controller";
 import {ExhibitController} from "../controller/exhibitController";
 import {LOCATION_NOT_FOUND, Message} from "../messages";
 import {INVALID_TOKEN} from "../messages/authenticationTypes";
@@ -13,6 +13,7 @@ export class WebSocket
     private odController: OdController;
     private locationController: LocationController;
     private exhibitController: ExhibitController;
+    private configController: ConfigController;
 
     constructor(server: any)
     {
@@ -211,6 +212,12 @@ export class WebSocket
                 {
                     socket.emit('loginExhibitResult', message);
                 });
+            });
+
+            socket.on('checkWifiSSID', (ssid) =>
+            {
+                const result = this.configController.isWifiSSIDMatching(ssid);
+                socket.emit('checkWifiSSIDResult', result)
             });
         });
     }

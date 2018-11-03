@@ -30,7 +30,8 @@ export class DataFactory
     private initSettings(): void
     {
         this._connection.settings.create({
-            guestNumber: 1
+            guestNumber: 1,
+            wifiSSID: 'MEETeUX'
         });
     }
 
