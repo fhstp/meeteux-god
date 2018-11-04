@@ -1,6 +1,6 @@
 import * as Express from 'express';
 import * as fs from 'fs';
-import * as http from 'http';
+import * as https from 'https';
 import  { WebSocket } from '../websockets';
 import Logger from './logger';
 import * as winston from 'winston';
@@ -21,7 +21,7 @@ export default class Server
         const cred = this.loadCredentials();
 
         this.app = new Express();
-        this.server = http.createServer(this.app);
+        this.server = https.createServer(cred, this.app);
         this.socket = new WebSocket(this.server);
 
         this.server.listen(process.env.SERVER_PORT, () => {
