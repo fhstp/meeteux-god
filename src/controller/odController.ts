@@ -105,14 +105,14 @@ export class OdController
 
     public findUser(identifier: any): any
     {
-        return this.database.user.findById(identifier).then( user => {
+        return this.database.user.findByPk(identifier).then( user => {
             return user;
         });
     }
 
     public autoLoginUser(identifier: any): any
     {
-        return this.database.user.findById(identifier).then( user => {
+        return this.database.user.findByPk(identifier).then( user => {
             if(!user)
                 throw new Error('User not found');
             return this.getLookupTable(user.id).then( (locations) => {

@@ -47,7 +47,7 @@ export class Connection
             {
                 console.log("Could not create data!");
             });
-        }).then( this._settings.findById(1).then(result => this._currentSettings = result));
+        }).then( this._settings.findByPk(1).then(result => this._currentSettings = result));
 
 
         // this._sequelize.sync().then( this._settings.findById(1).then(result => this._currentSettings = result));
