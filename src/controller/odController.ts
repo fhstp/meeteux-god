@@ -21,6 +21,9 @@ export class OdController
             {
                 for(let loc of locations)
                 {
+                    // default values must be set if no activity exists yet
+                    loc.dataValues.liked = false;
+                    loc.dataValues.locked = true;
                     for(let act of activities)
                     {
                         if(loc.id === act.locationId)
