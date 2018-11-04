@@ -88,7 +88,7 @@ export class DataFactory
         {
             return Promise.all([
                 this._connection.location.create({id: 100, parentId: 10, description: 'Table1 atExhibit', contentURL: 'tableat', ipAddress: '192.168.178.253',
-                    locationTypeId: 3, contentTypeId: 1, statusId: 2, currentSeat: 0, maxSeat: 4}),
+                    locationTypeId: 3, contentTypeId: 1, statusId: 2, currentSeat: 0, maxSeat: 4, showInTimeline: true}),
                 this._connection.location.create({id: 1000, description: 'Table1 onExhibit-1', parentId:100, contentURL: 'tableon', ipAddress: '0.0.0.0',
                     locationTypeId: 2, contentTypeId: 1, statusId: 2}),
                 this._connection.location.create({id: 1001, description: 'Table1 onExhibit-2', parentId:100, contentURL: 'tableon', ipAddress: '0.0.0.0',
@@ -107,7 +107,7 @@ export class DataFactory
         {
             return Promise.all([
                 this._connection.location.create({id: 101, parentId: 10, description: 'Table2 atExhibitBehavior', contentURL: 'tableat', ipAddress: '192.168.178.48',
-                    locationTypeId: 6, contentTypeId: 1, statusId: 2, currentSeat: 0, maxSeat: 15}),
+                    locationTypeId: 6, contentTypeId: 1, statusId: 2, currentSeat: 0, maxSeat: 15, showInTimeline: true}),
                 this._connection.location.create({id: 1013, description: 'Table2 onExhibitBehavior', parentId: 101, contentURL: 'tableon', ipAddress: '0.0.0.0',
                     locationTypeId: 7, contentTypeId: 1, statusId: 2})
             ]);
@@ -120,23 +120,23 @@ export class DataFactory
         {
             return Promise.all([
                 this._connection.location.create({id: 1004, parentId: 10, description: 'passive Exhibit1', contentURL: 'passive', ipAddress: '0.0.0.0',
-                    locationTypeId: 4, contentTypeId: 1, statusId: 1}),
+                    locationTypeId: 4, contentTypeId: 1, statusId: 1, showInTimeline:true}),
                 this._connection.location.create({id: 1005, parentId: 10, description: 'passive Exhibit2', contentURL: 'passive', ipAddress: '0.0.0.0',
-                    locationTypeId: 4, contentTypeId: 1, statusId: 1}),
+                    locationTypeId: 4, contentTypeId: 1, statusId: 1, showInTimeline:true}),
                 this._connection.location.create({id: 1006, parentId: 10, description: 'passive Exhibit3', contentURL: 'passive', ipAddress: '0.0.0.0',
-                    locationTypeId: 4, contentTypeId: 1, statusId: 1}),
+                    locationTypeId: 4, contentTypeId: 1, statusId: 1, showInTimeline:true}),
                 this._connection.location.create({id: 1007, parentId: 10, description: 'passive Exhibit4', contentURL: 'passive', ipAddress: '0.0.0.0',
-                    locationTypeId: 4, contentTypeId: 1, statusId: 1}),
+                    locationTypeId: 4, contentTypeId: 1, statusId: 1, showInTimeline:true}),
                 this._connection.location.create({id: 1008, parentId: 10, description: 'passive Exhibit5', contentURL: 'passive', ipAddress: '0.0.0.0',
-                    locationTypeId: 4, contentTypeId: 1, statusId: 1}),
+                    locationTypeId: 4, contentTypeId: 1, statusId: 1, showInTimeline:true}),
                 this._connection.location.create({id: 1009, parentId: 10, description: 'passive Exhibit6', contentURL: 'passive', ipAddress: '0.0.0.0',
-                    locationTypeId: 4, contentTypeId: 1, statusId: 1}),
+                    locationTypeId: 4, contentTypeId: 1, statusId: 1, showInTimeline:true}),
                 this._connection.location.create({id: 1010, parentId: 10, description: 'passive Exhibit7', contentURL: 'passive', ipAddress: '0.0.0.0',
-                    locationTypeId: 4, contentTypeId: 1, statusId: 1}),
+                    locationTypeId: 4, contentTypeId: 1, statusId: 1, showInTimeline:true}),
                 this._connection.location.create({id: 1011, parentId: 10, description: 'passive Exhibit8', contentURL: 'passive', ipAddress: '0.0.0.0',
-                    locationTypeId: 4, contentTypeId: 1, statusId: 1}),
+                    locationTypeId: 4, contentTypeId: 1, statusId: 1, showInTimeline:true}),
                 this._connection.location.create({id: 1012, parentId: 10, description: 'passive Exhibit9', contentURL: 'passive', ipAddress: '0.0.0.0',
-                    locationTypeId: 4, contentTypeId: 1, statusId: 1})
+                    locationTypeId: 4, contentTypeId: 1, statusId: 1, showInTimeline:true})
             ]);
         });
     }

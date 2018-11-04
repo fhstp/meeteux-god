@@ -21,7 +21,7 @@ class WebSocket {
             socket.use((packet, next) => {
                 const event = packet[0];
                 const token = socket.token;
-                if (event.localeCompare('registerOD') !== 0 && event.localeCompare('autoLoginOD') !== 0 && event.localeCompare('registerODGuest') !== 0 && event.localeCompare('disconnectedFromExhibit') !== 0 && event.localeCompare('loginExhibit') !== 0) {
+                if (this.checkEventsNoTokenNeeded(event)) {
                     jwt.verify(token, process.env.SECRET, (err, decoded) => {
                         if (err)
                             return next(new Error('Invalid token Error'));
@@ -61,8 +61,10 @@ class WebSocket {
             });
             socket.on('autoLoginOD', (data) => {
                 jwt.verify(data, process.env.SECRET, (err, decoded) => {
-                    if (err || !decoded)
-                        return { data: null, message: new messages_1.Message(authenticationTypes_1.INVALID_TOKEN, "Invalid token!") };
+                    if (err || !decoded) {
+                        socket.emit('autoLoginODResult', { data: null, message: new messages_1.Message(authenticationTypes_1.INVALID_TOKEN, "Invalid token!") });
+                        return;
+                    }
                     const user = decoded.user;
                     if (user) {
                         this.odController.autoLoginUser(user.id).then((result) => {
@@ -129,10 +131,19 @@ class WebSocket {
                     socket.emit('checkLocationStatusResult', message);
                 });
             });
+            socket.on('checkUsernameExists', (name) => {
+                this.odController.checkUserNameExists(name).then(exists => {
+                    socket.emit('checkUsernameExistsResult', exists);
+                });
+            });
             socket.on('loginExhibit', (ipAddress) => {
                 this.exhibitController.loginExhibit(ipAddress).then((message) => {
                     socket.emit('loginExhibitResult', message);
                 });
+            });
+            socket.on('checkWifiSSID', (ssid) => {
+                const result = this.configController.isWifiSSIDMatching(ssid);
+                socket.emit('checkWifiSSIDResult', result);
             });
         });
     }
@@ -140,6 +151,21 @@ class WebSocket {
         let ok = true;
         // TODO: Check with restricted events
         return ok;
+    }
+    checkEventsNoTokenNeeded(event) {
+        let isOk = false;
+        switch (event) {
+            case 'registerOD':
+            case 'autoLoginOD':
+            case 'loginOD':
+            case 'registerODGuest':
+            case 'disconnectedFromExhibit':
+            case 'checkUsernameExists':
+            case 'loginExhibit':
+                isOk = true;
+                break;
+        }
+        return isOk;
     }
 }
 exports.WebSocket = WebSocket;

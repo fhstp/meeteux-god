@@ -1,276 +1,26 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Sequelize = require("sequelize");
+const CLS = require("continuation-local-storage");
+const dataFactory_1 = require("./dataFactory");
 require('dotenv').config();
 class Connection {
     constructor() {
+        this._namespace = CLS.createNamespace('MEETeUX');
+        Sequelize.useCLS(this._namespace);
         this._sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
             host: 'localhost',
             dialect: 'mysql',
-            logging: true
+            operatorsAliases: { $and: Sequelize.Op.and },
+            logging: false
         });
         this.initDatabaseTables();
         this.initDatabaseRelations();
+        const dataFactory = new dataFactory_1.DataFactory();
+        dataFactory.connection = this;
         this._sequelize.sync({ force: true }).then(() => {
-            this._settings.create({
-                guestNumber: 1
-            });
-            this._locationType.create({
-                id: 1,
-                description: 'room'
-            });
-            this._locationType.create({
-                id: 2,
-                description: 'activeExhibitOn'
-            });
-            this._locationType.create({
-                id: 3,
-                description: 'activeExhibitAt'
-            });
-            this._locationType.create({
-                id: 4,
-                description: 'passiveExhibit'
-            });
-            this._locationType.create({
-                id: 5,
-                description: 'door'
-            });
-            this._locationType.create({
-                id: 6,
-                description: 'activeExhibitBehaviorAt'
-            });
-            this._locationType.create({
-                id: 7,
-                description: 'activeExhibitBehaviorOn'
-            });
-            this._contentType.create({
-                description: 'webContent'
-            });
-            this._status.create({
-                id: 1,
-                description: 'online'
-            });
-            this._status.create({
-                id: 2,
-                description: 'offline'
-            });
-            this._status.create({
-                id: 3,
-                description: 'free'
-            });
-            this._status.create({
-                id: 4,
-                description: 'occupied'
-            });
-            this._position.create({
-                longitude: 12,
-                latitude: 25,
-                floor: 1
-            });
-        }).then(() => {
-            this.location.create({
-                id: 10,
-                description: 'Büro',
-                locationTypeId: 1,
-                statusId: 1,
-                positionId: 1,
-                ipAddress: '0.0.0.0',
-                isStartPoint: true
-            }).then(() => {
-                this._location.create({
-                    id: 100,
-                    parentId: 10,
-                    description: 'Table1 atExhibit',
-                    contentURL: 'tableat',
-                    ipAddress: '192.168.178.253',
-                    // ipAddress: 'localhost',
-                    locationTypeId: 3,
-                    contentTypeId: 1,
-                    statusId: 2,
-                    positionId: 1,
-                    currentSeat: 0,
-                    maxSeat: 4
-                }).then(() => {
-                    this._location.create({
-                        id: 1000,
-                        description: 'Table1 onExhibit-1',
-                        parentId: 100,
-                        contentURL: 'tableon',
-                        ipAddress: '0.0.0.0',
-                        locationTypeId: 2,
-                        contentTypeId: 1,
-                        statusId: 2,
-                        positionId: 1
-                    });
-                    this._location.create({
-                        id: 1001,
-                        description: 'Table1 onExhibit-2',
-                        parentId: 100,
-                        contentURL: 'tableon',
-                        ipAddress: '0.0.0.0',
-                        locationTypeId: 2,
-                        contentTypeId: 1,
-                        statusId: 2,
-                        positionId: 1
-                    });
-                    this._location.create({
-                        id: 1002,
-                        description: 'Table1 onExhibit-3',
-                        parentId: 100,
-                        contentURL: 'tableon',
-                        ipAddress: '0.0.0.0',
-                        locationTypeId: 2,
-                        contentTypeId: 1,
-                        statusId: 2,
-                        positionId: 1
-                    });
-                    this._location.create({
-                        id: 1003,
-                        description: 'Table1 onExhibit-4',
-                        parentId: 100,
-                        contentURL: 'tableon',
-                        ipAddress: '0.0.0.0',
-                        locationTypeId: 2,
-                        contentTypeId: 1,
-                        statusId: 2,
-                        positionId: 1
-                    });
-                });
-                this._location.create({
-                    id: 101,
-                    parentId: 10,
-                    description: 'Table2 atExhibitBehavior',
-                    contentURL: 'tableat',
-                    ipAddress: '192.168.178.48',
-                    locationTypeId: 6,
-                    contentTypeId: 1,
-                    statusId: 2,
-                    positionId: 1,
-                    currentSeat: 0,
-                    maxSeat: 15
-                }).then(() => {
-                    this._location.create({
-                        id: 1013,
-                        description: 'Table2 onExhibitBehavior',
-                        parentId: 101,
-                        contentURL: 'tableon',
-                        ipAddress: '0.0.0.0',
-                        locationTypeId: 7,
-                        contentTypeId: 1,
-                        statusId: 2,
-                        positionId: 1
-                    });
-                });
-                this._location.create({
-                    id: 10000,
-                    parentId: 10,
-                    description: 'Door',
-                    contentURL: 'http://www.google.at',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 5,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-                this._location.create({
-                    id: 1004,
-                    parentId: 10,
-                    description: 'passive Exhibit1',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-                this._location.create({
-                    id: 1005,
-                    parentId: 10,
-                    description: 'passive Exhibit2',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-                this._location.create({
-                    id: 1006,
-                    parentId: 10,
-                    description: 'passive Exhibit3',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-                this._location.create({
-                    id: 1007,
-                    parentId: 10,
-                    description: 'passive Exhibit4',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-                this._location.create({
-                    id: 1008,
-                    parentId: 10,
-                    description: 'passive Exhibit5',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-                this._location.create({
-                    id: 1009,
-                    parentId: 10,
-                    description: 'passive Exhibit6',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-                this._location.create({
-                    id: 1010,
-                    parentId: 10,
-                    description: 'passive Exhibit7',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-                this._location.create({
-                    id: 1011,
-                    parentId: 10,
-                    description: 'passive Exhibit8',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
-                this._location.create({
-                    id: 1012,
-                    parentId: 10,
-                    description: 'passive Exhibit9',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    positionId: 1
-                });
+            dataFactory.createData().catch(err => {
+                console.log("Could not create data!");
             });
         }).then(this._settings.findById(1).then(result => this._currentSettings = result));
         // this._sequelize.sync().then( this._settings.findById(1).then(result => this._currentSettings = result));
@@ -290,6 +40,9 @@ class Connection {
         this._activity.belongsTo(this._user, { foreignKey: { allowNull: false } });
         this._location.hasMany(this._activity, { onDelete: 'cascade', foreignKey: { allowNull: false } });
         this._activity.belongsTo(this._location, { foreignKey: { allowNull: false } });
+        //ActivityLog to Activity Relation (1:n)
+        this._activity.hasMany(this._activityLog, { onDelete: 'cascade' });
+        this._activityLog.belongsTo(this._activity);
         //_location to _location relation (1:n)
         this._location.hasMany(this._location, { onDelete: 'cascade', foreignKey: {
                 name: 'parentId',
@@ -335,13 +88,16 @@ class Connection {
         this._status.hasMany(this._location, { foreignKey: { allowNull: false } });
         this._location.belongsTo(this._status, { foreignKey: { allowNull: false } });
         //_location to _position relation (1:n)
-        this._position.hasMany(this._location, { foreignKey: { allowNull: false } });
-        this._location.belongsTo(this._position, { foreignKey: { allowNull: false } });
+        this._position.hasMany(this._location, { foreignKey: { allowNull: true } });
+        this._location.belongsTo(this._position, { foreignKey: { allowNull: true } });
     }
     initDatabaseTables() {
         this._settings = this._sequelize.define('setting', {
             guestNumber: {
                 type: Sequelize.INTEGER
+            },
+            wifiSSID: {
+                type: Sequelize.STRING
             }
         });
         this._user = this._sequelize.define('user', {
@@ -357,6 +113,9 @@ class Connection {
             password: {
                 type: Sequelize.STRING,
                 allowNull: true
+            },
+            email: {
+                type: Sequelize.STRING
             },
             isGuest: {
                 type: Sequelize.BOOLEAN,
@@ -431,6 +190,10 @@ class Connection {
                 type: Sequelize.BOOLEAN,
                 allowNull: false,
                 defaultValue: false
+            },
+            showInTimeline: {
+                type: Sequelize.BOOLEAN,
+                defaultValue: false
             }
         });
         this._neighbor = this._sequelize.define('neighbor', {
@@ -486,17 +249,20 @@ class Connection {
             }
         });
         this._activity = this._sequelize.define('activity', {
-            timestamp: {
-                type: Sequelize.DATE,
-                allowNull: false
-            },
             liked: {
                 type: Sequelize.BOOLEAN,
                 defaultValue: false
             },
-            dismissed: {
+            locked: {
                 type: Sequelize.BOOLEAN,
-                defaultValue: false
+                defaultValue: true
+            }
+        });
+        this._activityLog = this._sequelize.define('activityLog', {
+            timestamp: {
+                type: Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW
             }
         });
     }
@@ -508,6 +274,9 @@ class Connection {
     }
     get activity() {
         return this._activity;
+    }
+    get activityLog() {
+        return this._activityLog;
     }
     get user() {
         return this._user;
@@ -538,6 +307,9 @@ class Connection {
     }
     get sequelize() {
         return this._sequelize;
+    }
+    get settings() {
+        return this._settings;
     }
 }
 exports.Connection = Connection;

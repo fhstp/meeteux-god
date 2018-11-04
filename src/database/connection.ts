@@ -238,6 +238,10 @@ export class Connection
                 type: Sequelize.BOOLEAN,
                 allowNull: false,
                 defaultValue: false
+            },
+            showInTimeline: {
+                type: Sequelize.BOOLEAN,
+                defaultValue: false
             }
         });
 
