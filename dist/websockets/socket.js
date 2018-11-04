@@ -21,7 +21,7 @@ class WebSocket {
             socket.use((packet, next) => {
                 const event = packet[0];
                 const token = socket.token;
-                if (this.checkEventsNoTokenNeeded(event)) {
+                if (this.checkEventsTokenNeeded(event)) {
                     jwt.verify(token, process.env.SECRET, (err, decoded) => {
                         if (err)
                             return next(new Error('Invalid token Error'));
@@ -152,8 +152,8 @@ class WebSocket {
         // TODO: Check with restricted events
         return ok;
     }
-    checkEventsNoTokenNeeded(event) {
-        let isOk = false;
+    checkEventsTokenNeeded(event) {
+        let needed = true;
         switch (event) {
             case 'registerOD':
             case 'autoLoginOD':
@@ -162,10 +162,10 @@ class WebSocket {
             case 'disconnectedFromExhibit':
             case 'checkUsernameExists':
             case 'loginExhibit':
-                isOk = true;
+                needed = false;
                 break;
         }
-        return isOk;
+        return needed;
     }
 }
 exports.WebSocket = WebSocket;

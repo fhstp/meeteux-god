@@ -24,8 +24,8 @@ class LocationController {
                 this.database.activityLog.create({ activityId: activity.id });
                 if (dismissed)
                     return { data: { location: locationId, dismissed }, message: new messages_1.Message(messages_1.SUCCESS_OK, 'Location Registered successfully') };
-                this.database.user.update({ currentLocation: location }, { where: { id: userId } });
-                this.database.location.findById(location).then((currentLocation) => {
+                this.database.user.update({ currentLocation: locationId }, { where: { id: userId } });
+                this.database.location.findByPk(locationId).then((currentLocation) => {
                     if (currentLocation.statusId === statusTypes.FREE && (currentLocation.locationTypeId === locationTypes.ACTIVE_EXHIBIT_ON || currentLocation.locationTypeId === locationTypes.ACTIVE_EXHIBIT_BEHAVIOR_ON)) {
                         this.database.location.update({ currentSeat: this.database.sequelize.literal('currentSeat +1') }, { where: { id: currentLocation.parentId } }).then(() => {
                             if (currentLocation.locationTypeId === locationTypes.ACTIVE_EXHIBIT_ON)
@@ -35,9 +35,12 @@ class LocationController {
                     }
                 });
             }).then(() => {
-                return { data: { location: locationId, dismissed }, message: new messages_1.Message(messages_1.SUCCESS_OK, 'Location Registered successfully') };
-            }).catch(() => {
-                return { data: null, message: new messages_1.Message(messages_1.LOCATION_NOT_UPDATED, 'Could not register location') };
+                return this.getLookupTable(userId).then(lookuptable => {
+                    return {
+                        data: { location: locationId, dismissed, lookuptable },
+                        message: new messages_1.Message(messages_1.SUCCESS_OK, 'Location Registered successfully')
+                    };
+                });
             });
         });
     }
@@ -64,6 +67,9 @@ class LocationController {
         return this.database.location.findAll().then((locations) => {
             return this.database.activity.findAll({ where: { userId: user } }).then((activities) => {
                 for (let loc of locations) {
+                    // default values must be set if no activity exists yet
+                    loc.dataValues.liked = false;
+                    loc.dataValues.locked = true;
                     for (let act of activities) {
                         if (loc.id === act.locationId) {
                             loc.dataValues.liked = act.liked;
@@ -95,8 +101,8 @@ class LocationController {
     }
     tableDisconnectFromExhibit(users) {
         for (let u of users) {
-            this.database.user.findById(u.id).then(user => {
-                this.database.location.findById(user.currentLocation).then(location => {
+            this.database.user.findByPk(u.id).then(user => {
+                this.database.location.findByPk(user.currentLocation).then(location => {
                     this.disconnectedFromExhibit({ parentLocation: location.parentId, location: location.id });
                     this.registerLocation({ user: user.id, location: location.parentId });
                 });
@@ -106,7 +112,7 @@ class LocationController {
     checkLocationStatus(locationId) {
         //console.log(locationId);
         let status = "NOT FOUND";
-        return this.database.location.findById(locationId).then((location) => {
+        return this.database.location.findByPk(locationId).then((location) => {
             // console.log("CheckLocationStatus:\n-typeId: " + location.locationTypeId + "\n-statusId: " + location.statusId);
             if (location.locationTypeId != locationTypes.ACTIVE_EXHIBIT_ON && location.locationTypeId != locationTypes.ACTIVE_EXHIBIT_AT && location.locationTypeId != locationTypes.ACTIVE_EXHIBIT_BEHAVIOR_ON && location.locationTypeId != locationTypes.ACTIVE_EXHIBIT_BEHAVIOR_AT)
                 status = "NOT ACTIVE EXHIBIT";
@@ -126,7 +132,7 @@ class LocationController {
         });
     }
     updateActiveLocationStatus(locationId) {
-        return this.database.location.findById(locationId).then((location) => {
+        return this.database.location.findByPk(locationId).then((location) => {
             if (location.locationTypeId === locationTypes.ACTIVE_EXHIBIT_AT || location.locationTypeId === locationTypes.ACTIVE_EXHIBIT_BEHAVIOR_AT) {
                 if (location.currentSeat < location.maxSeat && location.statusId === statusTypes.OCCUPIED) {
                     location.statusId = statusTypes.FREE;

@@ -12,6 +12,9 @@ class OdController {
         return this.database.location.findAll().then((locations) => {
             return this.database.activity.findAll({ where: { userId: user } }).then((activities) => {
                 for (let loc of locations) {
+                    // default values must be set if no activity exists yet
+                    loc.dataValues.liked = false;
+                    loc.dataValues.locked = true;
                     for (let act of activities) {
                         if (loc.id === act.locationId) {
                             loc.dataValues.liked = act.liked;
@@ -84,12 +87,12 @@ class OdController {
         });
     }
     findUser(identifier) {
-        return this.database.user.findById(identifier).then(user => {
+        return this.database.user.findByPk(identifier).then(user => {
             return user;
         });
     }
     autoLoginUser(identifier) {
-        return this.database.user.findById(identifier).then(user => {
+        return this.database.user.findByPk(identifier).then(user => {
             if (!user)
                 throw new Error('User not found');
             return this.getLookupTable(user.id).then((locations) => {
