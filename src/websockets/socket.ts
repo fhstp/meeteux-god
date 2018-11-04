@@ -35,7 +35,7 @@ export class WebSocket
                 const event: String = packet[0];
                 const token = socket.token;
 
-                if(this.checkEventsNoTokenNeeded(event))
+                if(this.checkEventsTokenNeeded(event))
                 {
                     jwt.verify(token, process.env.SECRET, (err, decoded) =>
                     {
@@ -231,9 +231,9 @@ export class WebSocket
         return ok;
     }
 
-    private checkEventsNoTokenNeeded(event: String): boolean
+    private checkEventsTokenNeeded(event: String): boolean
     {
-        let isOk = false;
+        let needed = true;
         switch (event)
         {
             case 'registerOD':
@@ -243,9 +243,9 @@ export class WebSocket
             case 'disconnectedFromExhibit':
             case 'checkUsernameExists':
             case 'loginExhibit':
-                isOk = true;
+                needed = false;
                 break;
         }
-        return isOk;
+        return needed;
     }
 }
