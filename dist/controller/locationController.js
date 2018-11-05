@@ -17,7 +17,7 @@ class LocationController {
                 where: { userId, locationId },
                 defaults: { locked: dismissed }
             }).spread((activity, wasCreated) => {
-                if (!wasCreated) {
+                if (!wasCreated && activity.locked && !dismissed) {
                     activity.locked = dismissed;
                     activity.save();
                 }
