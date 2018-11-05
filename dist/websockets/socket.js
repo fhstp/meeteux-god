@@ -136,6 +136,11 @@ class WebSocket {
                     socket.emit('checkUsernameExistsResult', exists);
                 });
             });
+            socket.on('checkEmailExists', (mail) => {
+                this.odController.checkEmailExists(mail).then(exists => {
+                    socket.emit('checkEmailExistsResult', exists);
+                });
+            });
             socket.on('loginExhibit', (ipAddress) => {
                 this.exhibitController.loginExhibit(ipAddress).then((message) => {
                     socket.emit('loginExhibitResult', message);
@@ -161,6 +166,7 @@ class WebSocket {
             case 'registerODGuest':
             case 'disconnectedFromExhibit':
             case 'checkUsernameExists':
+            case 'checkEmailExists':
             case 'loginExhibit':
                 needed = false;
                 break;

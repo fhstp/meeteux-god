@@ -147,21 +147,23 @@ export class Connection
         });
 
         this._user = this._sequelize.define('user', {
-            'id': {
+            id: {
                 primaryKey: true,
                 type: Sequelize.UUID,
                 defaultValue: Sequelize.UUIDV4,
             },
             name: {
                 type: Sequelize.STRING,
-                allowNull: false
+                allowNull: false,
+                unique: true
             },
             password: {
                 type: Sequelize.STRING,
                 allowNull: true
             },
             email: {
-                type: Sequelize.STRING
+                type: Sequelize.STRING,
+                unique: true
             },
             isGuest: {
                 type: Sequelize.BOOLEAN,
