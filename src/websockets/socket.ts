@@ -21,6 +21,7 @@ export class WebSocket
         this.odController = new OdController();
         this.locationController = new LocationController();
         this.exhibitController = new ExhibitController();
+        this.configController = new ConfigController();
         this.database = Connection.getInstance();
 
         this.attachListeners();
@@ -232,6 +233,7 @@ export class WebSocket
 
             socket.on('checkWifiSSID', (ssid) =>
             {
+                console.log("Received SSID: " + ssid);
                 const result = this.configController.isWifiSSIDMatching(ssid);
                 socket.emit('checkWifiSSIDResult', result)
             });

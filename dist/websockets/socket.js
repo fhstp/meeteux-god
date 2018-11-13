@@ -13,6 +13,7 @@ class WebSocket {
         this.odController = new controller_1.OdController();
         this.locationController = new controller_1.LocationController();
         this.exhibitController = new exhibitController_1.ExhibitController();
+        this.configController = new controller_1.ConfigController();
         this.database = database_1.Connection.getInstance();
         this.attachListeners();
     }
@@ -152,6 +153,7 @@ class WebSocket {
                 });
             });
             socket.on('checkWifiSSID', (ssid) => {
+                console.log("Received SSID: " + ssid);
                 const result = this.configController.isWifiSSIDMatching(ssid);
                 socket.emit('checkWifiSSIDResult', result);
             });
