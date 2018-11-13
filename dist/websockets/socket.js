@@ -112,6 +112,11 @@ class WebSocket {
                     socket.emit('registerLocationResult', message);
                 });
             });
+            socket.on('registerTimelineUpdate', (data) => {
+                this.locationController.registerTimelineUpdate(data).then((message) => {
+                    socket.emit('registerTimelineUpdateResult', message);
+                });
+            });
             socket.on('updateLocationLike', (data) => {
                 this.locationController.updateLocationLike(data).then((message) => {
                     socket.emit('registerLocationLikeResult', message);

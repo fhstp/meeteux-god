@@ -27,15 +27,7 @@ export class LocationController
         const dismissed: boolean = data.dismissed;
 
         return this.database.sequelize.transaction( (t1) => {
-            return this.database.activity.findOrCreate({
-                where: {userId, locationId},
-                defaults: {locked: dismissed}
-            }).spread((activity, wasCreated) => {
-                if(!wasCreated && activity.locked && !dismissed)
-                {
-                    activity.locked = dismissed;
-                    activity.save();
-                }
+            return this.database.activity.findOne({where: {userId, locationId} }).then( activity => {
 
                 this.database.activityLog.create({activityId: activity.id});
 
@@ -55,9 +47,33 @@ export class LocationController
                     }
                 });
             }).then(() => {
+                return {
+                    data: {location: locationId, dismissed},
+                    message: new Message(SUCCESS_OK, 'Location Registered successfully')
+                };
+            });
+        });
+    }
+
+    public registerTimelineUpdate(data: any): any
+    {
+        const userId: number = data.user;
+        const locationId: number = data.location;
+
+        return this.database.sequelize.transaction( (t1) => {
+            return this.database.activity.findOrCreate({
+                where: {userId, locationId},
+                defaults: {locked: false}
+            }).spread((activity, wasCreated) => {
+                if(!wasCreated && activity.locked)
+                {
+                    activity.locked = false;
+                    activity.save();
+                }
+            }).then(() => {
                 return this.getLookupTable(userId).then(lookuptable => {
                     return {
-                        data: {location: locationId, dismissed, lookuptable},
+                        data: { lookuptable },
                         message: new Message(SUCCESS_OK, 'Location Registered successfully')
                     };
                 });

@@ -168,6 +168,14 @@ export class WebSocket
                 });
             });
 
+            socket.on('registerTimelineUpdate', (data) =>
+            {
+                this.locationController.registerTimelineUpdate(data).then( (message) =>
+                {
+                    socket.emit('registerTimelineUpdateResult', message);
+                });
+            });
+
             socket.on('updateLocationLike', (data) =>
             {
                 this.locationController.updateLocationLike(data).then( (message) =>
