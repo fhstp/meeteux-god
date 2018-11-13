@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Express = require("express");
 const fs = require("fs");
-const http = require("http");
+const https = require("https");
 const websockets_1 = require("../websockets");
 const logger_1 = require("./logger");
 require('dotenv').config();
@@ -12,7 +12,7 @@ class Server {
         this._logger = logger_1.default.getInstance();
         const cred = this.loadCredentials();
         this.app = new Express();
-        this.server = http.createServer(this.app);
+        this.server = https.createServer(cred, this.app);
         this.socket = new websockets_1.WebSocket(this.server);
         this.server.listen(process.env.SERVER_PORT, () => {
             this._logger.info('Server runs on Port ' + process.env.SERVER_PORT);
