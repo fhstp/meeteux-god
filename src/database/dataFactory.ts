@@ -106,7 +106,7 @@ export class DataFactory
         return this._connection.sequelize.transaction(t1 =>
         {
             return Promise.all([
-                this._connection.location.create({id: 101, parentId: 10, description: 'Table2 atExhibitBehavior', contentURL: 'tableat', ipAddress: '192.168.178.48',
+                this._connection.location.create({id: 101, parentId: 10, description: 'Table2 atExhibitBehavior', contentURL: 'tableat', ipAddress: '192.168.178.252',
                     locationTypeId: 6, contentTypeId: 1, statusId: 2, currentSeat: 0, maxSeat: 15, showInTimeline: true}),
                 this._connection.location.create({id: 1013, description: 'Table2 onExhibitBehavior', parentId: 101, contentURL: 'tableon', ipAddress: '0.0.0.0',
                     locationTypeId: 7, contentTypeId: 1, statusId: 2})
