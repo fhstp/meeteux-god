@@ -27,7 +27,15 @@ export class LocationController
         const dismissed: boolean = data.dismissed;
 
         return this.database.sequelize.transaction( (t1) => {
-            return this.database.activity.findOne({where: {userId, locationId} }).then( activity => {
+            return this.database.activity.findOrCreate({
+                where: {userId, locationId},
+                defaults: {locked: false}
+            }).spread((activity, wasCreated) => {
+                if(!wasCreated && activity.locked)
+                {
+                    activity.locked = false;
+                    activity.save();
+                }
 
                 this.database.activityLog.create({activityId: activity.id});
 
