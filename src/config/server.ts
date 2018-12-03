@@ -3,7 +3,6 @@ import * as fs from 'fs';
 import * as https from 'https';
 import  { WebSocket } from '../websockets';
 import Logger from './logger';
-import * as winston from 'winston';
 require('dotenv').config();
 
 //import * as http from 'http';

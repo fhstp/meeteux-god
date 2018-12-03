@@ -108,21 +108,31 @@ class OdController {
         const password = data.password;
         if (user) {
             return this.database.user.findOne({ where: { name: user, password } }).then((user) => {
-                return this.getLookupTable(user.id).then((locations) => {
-                    return {
-                        data: { user, locations },
-                        message: new messages_1.Message(messages_1.SUCCESS_LOGGED_IN, "User logged in successfully")
-                    };
-                });
+                if (user) {
+                    return this.getLookupTable(user.id).then((locations) => {
+                        return {
+                            data: { user, locations },
+                            message: new messages_1.Message(messages_1.SUCCESS_LOGGED_IN, "User logged in successfully")
+                        };
+                    });
+                }
+                else {
+                    return { data: undefined, message: new messages_1.Message(odTypes_1.OD_NOT_FOUND, "Could not log in user") };
+                }
             }).catch(() => {
                 return { data: null, message: new messages_1.Message(authenticationTypes_1.LOGIN_FAILED, "User not found!") };
             });
         }
         else {
             return this.database.user.findOne({ where: { email, password } }).then((user) => {
-                return this.getLookupTable(user.id).then((locations) => {
-                    return { data: { user, locations }, message: new messages_1.Message(messages_1.SUCCESS_LOGGED_IN, "User logged in successfully") };
-                });
+                if (user) {
+                    return this.getLookupTable(user.id).then((locations) => {
+                        return { data: { user, locations }, message: new messages_1.Message(messages_1.SUCCESS_LOGGED_IN, "User logged in successfully") };
+                    });
+                }
+                else {
+                    return { data: undefined, message: new messages_1.Message(odTypes_1.OD_NOT_FOUND, "Could not log in user") };
+                }
             }).catch(() => {
                 return { data: null, message: new messages_1.Message(authenticationTypes_1.LOGIN_FAILED, "User not found!") };
             });

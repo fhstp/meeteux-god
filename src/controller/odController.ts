@@ -1,7 +1,7 @@
 
 import { Connection } from '../database';
 import {Message, SUCCESS_CREATED, SUCCESS_LOGGED_IN} from "../messages";
-import {OD_NOT_CREATED} from "../messages/odTypes";
+import {OD_NOT_CREATED, OD_NOT_FOUND} from "../messages/odTypes";
 import {LOGIN_FAILED} from "../messages/authenticationTypes";
 
 export class OdController
@@ -133,12 +133,18 @@ export class OdController
 
         if (user) {
             return this.database.user.findOne({where: {name: user, password}}).then((user) => {
-                return this.getLookupTable(user.id).then((locations) => {
-                    return {
-                        data: {user, locations},
-                        message: new Message(SUCCESS_LOGGED_IN, "User logged in successfully")
-                    };
-                });
+                if(user)
+                {
+                    return this.getLookupTable(user.id).then((locations) => {
+                        return {
+                            data: {user, locations},
+                            message: new Message(SUCCESS_LOGGED_IN, "User logged in successfully")
+                        };
+                    });
+                }
+                else {
+                    return {data: undefined, message: new Message(OD_NOT_FOUND, "Could not log in user")};
+                }
             }).catch(() => {
                 return {data: null, message: new Message(LOGIN_FAILED, "User not found!")}
             });
@@ -146,9 +152,15 @@ export class OdController
         else {
             return this.database.user.findOne({where: {email, password}}).then( (user) =>
             {
-                return this.getLookupTable(user.id).then( (locations) => {
-                    return {data: {user, locations}, message: new Message(SUCCESS_LOGGED_IN, "User logged in successfully")};
-                });
+                if(user)
+                {
+                    return this.getLookupTable(user.id).then( (locations) => {
+                        return {data: {user, locations}, message: new Message(SUCCESS_LOGGED_IN, "User logged in successfully")};
+                    });
+                }
+                else {
+                    return {data: undefined, message: new Message(OD_NOT_FOUND, "Could not log in user")};
+                }
             }).catch(() => {
                 return {data: null, message: new Message(LOGIN_FAILED, "User not found!")}
             });
