@@ -83,7 +83,7 @@ class OdController {
         const deviceModel = data.deviceModel;
         const language = data.language;
         //const ipAddress: string = data.ipAddress;
-        console.log("id: %s language: %d", identifier, language);
+        // console.log("id: %s language: %d", identifier, language);
         return this.database.sequelize.transaction((t1) => {
             return this.database.user.create({
                 name: identifier,
@@ -180,6 +180,30 @@ class OdController {
         }).catch(() => {
             return { data: null, message: new messages_1.Message(odTypes_1.OD_NOT_UPDATED, "Could not change language!") };
         });
+    }
+    updateUserData(data) {
+        const id = data.user;
+        const username = data.username;
+        const email = data.email;
+        const password = data.password;
+        const newPassword = data.newPassword;
+        return this.database.user.findByPk(id).then(user => {
+            if (!user)
+                throw new Error('User not found');
+            if (username && username !== '')
+                user.name = username;
+            if (email && email !== '')
+                user.email = email;
+            if (password && password === user.password && newPassword && newPassword !== user.password && newPassword !== '')
+                user.password = password;
+            user.save();
+            return { data: { user }, message: new messages_1.Message(messages_1.SUCCESS_UPDATED, "Updated user data successfully!") };
+        }).catch(() => {
+            return { data: null, message: new messages_1.Message(odTypes_1.OD_NOT_UPDATED, "Could not update user data!") };
+        });
+    }
+    deleteOD(userId) {
+        this.database.user.destroy({ where: { id: userId } });
     }
     checkUserNameExists(name) {
         return this.database.user.count({ where: { name: name } }).then(count => {

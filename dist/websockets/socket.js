@@ -107,6 +107,9 @@ class WebSocket {
                     socket.emit('registerODResult', result);
                 });
             });
+            socket.on('deleteOD', (data) => {
+                this.odController.deleteOD(data);
+            });
             socket.on('registerLocation', (data) => {
                 // console.log("register location: " + data.location + ", " + data.user);
                 this.locationController.registerLocation(data).then((message) => {
@@ -159,6 +162,11 @@ class WebSocket {
             socket.on('updateUserLanguage', (data) => {
                 this.odController.updateUserLanguage(data).then(result => {
                     socket.emit('updateUserLanguageResult', result);
+                });
+            });
+            socket.on('updateUserData', (data) => {
+                this.odController.updateUserData(data).then(result => {
+                    socket.emit('updateUserDataResult', result);
                 });
             });
         });
