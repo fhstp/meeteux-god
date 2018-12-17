@@ -4,9 +4,41 @@ const database_1 = require("../database");
 const messages_1 = require("../messages");
 const statusTypes = require("../config/statusTypes");
 const locationTypes = require("../config/locationTypes");
+const contentLanguages = require("../config/contentLanguages");
 class LocationController {
     constructor() {
         this.database = database_1.Connection.getInstance();
+    }
+    getLookupTable(user) {
+        return this.database.location.findAll({
+            include: [
+                {
+                    model: this.database.content,
+                    where: { contentLanguageId: { [this.database.sequelize.Op.or]: [user.contentLanguageId, contentLanguages.ALL] } },
+                    required: false
+                }
+            ],
+            order: [
+                ['id', 'ASC'],
+                [this.database.content, 'order', 'asc']
+            ]
+        }).then((locations) => {
+            return this.database.activity.findAll({ where: { userId: user.id } }).then((activities) => {
+                for (let loc of locations) {
+                    // default values must be set if no activity exists yet
+                    loc.dataValues.liked = false;
+                    loc.dataValues.locked = true;
+                    for (let act of activities) {
+                        if (loc.id === act.locationId) {
+                            loc.dataValues.liked = act.liked;
+                            loc.dataValues.locked = act.locked;
+                            console.log(loc.dataValues);
+                        }
+                    }
+                }
+                return locations;
+            });
+        });
     }
     registerLocation(data) {
         const userId = data.user;
@@ -55,49 +87,32 @@ class LocationController {
                     activity.save();
                 }
             }).then(() => {
-                return this.getLookupTable(userId).then(lookuptable => {
-                    return {
-                        data: { lookuptable },
-                        message: new messages_1.Message(messages_1.SUCCESS_OK, 'Location Registered successfully')
-                    };
+                return this.database.user.findByPk(userId).then(user => {
+                    return this.getLookupTable(user).then((locations) => {
+                        return { data: { locations }, message: new messages_1.Message(messages_1.SUCCESS_OK, "Activity updated successfully") };
+                    });
                 });
             });
         });
     }
     updateLocationLike(data) {
-        const user = data.user;
+        const userId = data.user;
         const location = data.location;
         const like = data.like;
         return this.database.sequelize.transaction((t1) => {
             return this.database.activity.update({ liked: like }, {
                 where: {
-                    userId: user,
+                    userId: userId,
                     locationId: location
                 }
             }).then(() => {
-                return this.getLookupTable(user).then((locations) => {
-                    return { data: { locations }, message: new messages_1.Message(messages_1.SUCCESS_OK, "Activity updated successfully") };
+                return this.database.user.findByPk(userId).then(user => {
+                    return this.getLookupTable(user).then((locations) => {
+                        return { data: { locations }, message: new messages_1.Message(messages_1.SUCCESS_OK, "Activity updated successfully") };
+                    });
                 });
             }).catch(() => {
                 return { data: null, message: new messages_1.Message(messages_1.LOCATION_NOT_UPDATED, 'Could not update activity') };
-            });
-        });
-    }
-    getLookupTable(user) {
-        return this.database.location.findAll().then((locations) => {
-            return this.database.activity.findAll({ where: { userId: user } }).then((activities) => {
-                for (let loc of locations) {
-                    // default values must be set if no activity exists yet
-                    loc.dataValues.liked = false;
-                    loc.dataValues.locked = true;
-                    for (let act of activities) {
-                        if (loc.id === act.locationId) {
-                            loc.dataValues.liked = act.liked;
-                            loc.dataValues.locked = act.locked;
-                        }
-                    }
-                }
-                return locations;
             });
         });
     }

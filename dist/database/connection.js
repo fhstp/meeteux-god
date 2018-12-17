@@ -81,9 +81,18 @@ class Connection {
         //_location to _locationType relation (1:n)
         this._locationType.hasMany(this._location, { foreignKey: { allowNull: false } });
         this._location.belongsTo(this._locationType, { foreignKey: { allowNull: false } });
-        //_location to _contentType relation (1:n)
-        this._location.belongsTo(this._contentType);
-        this._contentType.hasMany(this._location);
+        //_location to _content relation (1:n)
+        this._content.belongsTo(this._location, { foreignKey: { allowNull: false } });
+        this._location.hasMany(this._content, { foreignKey: { allowNull: false } });
+        //_content to _contentType relation (1:n)
+        this._content.belongsTo(this._contentType, { foreignKey: { allowNull: false } });
+        this._contentType.hasMany(this._content, { foreignKey: { allowNull: false } });
+        //_content to _contentLanguage relation (1:n)
+        this._content.belongsTo(this._contentLanguage, { foreignKey: { allowNull: false } });
+        this._contentLanguage.hasMany(this._content, { foreignKey: { allowNull: false } });
+        //_user to _contentLanguage relation (1:n)
+        this._user.belongsTo(this._contentLanguage, { foreignKey: { allowNull: false } });
+        this._contentLanguage.hasMany(this._user, { foreignKey: { allowNull: false } });
         //_location to _status relation (1:n)
         this._status.hasMany(this._location, { foreignKey: { allowNull: false } });
         this._location.belongsTo(this._status, { foreignKey: { allowNull: false } });
@@ -167,10 +176,6 @@ class Connection {
             contentURL: {
                 type: Sequelize.STRING
             },
-            contentVersion: {
-                type: Sequelize.DOUBLE,
-                defaultValue: 1.0
-            },
             ipAddress: {
                 type: Sequelize.STRING,
                 allowNull: false
@@ -215,6 +220,26 @@ class Connection {
                 autoIncrement: false
             },
             description: {
+                type: Sequelize.STRING,
+                allowNull: false
+            }
+        });
+        this._content = this._sequelize.define('content', {
+            content: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            order: {
+                type: Sequelize.INTEGER,
+                allowNull: false
+            }
+        });
+        this._contentLanguage = this._sequelize.define('contentLanguage', {
+            description: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            tag: {
                 type: Sequelize.STRING,
                 allowNull: false
             }
@@ -303,6 +328,12 @@ class Connection {
     }
     get neighbor() {
         return this._neighbor;
+    }
+    get content() {
+        return this._content;
+    }
+    get contentLanguage() {
+        return this._contentLanguage;
     }
     get currentSettings() {
         return this._currentSettings;

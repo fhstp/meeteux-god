@@ -10,6 +10,7 @@ import {
 } from '../messages';
 import * as statusTypes from '../config/statusTypes';
 import * as locationTypes from '../config/locationTypes';
+import * as contentLanguages from "../config/contentLanguages";
 
 export class LocationController
 {
@@ -18,6 +19,45 @@ export class LocationController
     constructor()
     {
         this.database = Connection.getInstance();
+    }
+
+    private getLookupTable(user): any
+    {
+        return this.database.location.findAll({
+            include: [
+                {
+                    model: this.database.content,
+                    where: {contentLanguageId: {[this.database.sequelize.Op.or]: [user.contentLanguageId, contentLanguages.ALL]}},
+                    required: false
+                }
+            ],
+            order: [
+                ['id', 'ASC'],
+                [this.database.content, 'order', 'asc']
+            ]
+        }).then( (locations) =>
+        {
+            return this.database.activity.findAll({where: {userId: user.id}}).then( (activities) =>
+            {
+                for(let loc of locations)
+                {
+                    // default values must be set if no activity exists yet
+                    loc.dataValues.liked = false;
+                    loc.dataValues.locked = true;
+                    for(let act of activities)
+                    {
+                        if(loc.id === act.locationId)
+                        {
+                            loc.dataValues.liked = act.liked;
+                            loc.dataValues.locked = act.locked;
+                            console.log(loc.dataValues);
+                        }
+                    }
+                }
+
+                return locations;
+            });
+        });
     }
 
     public registerLocation(data: any): any
@@ -65,7 +105,7 @@ export class LocationController
 
     public registerTimelineUpdate(data: any): any
     {
-        const userId: number = data.user;
+        const userId: string = data.user;
         const locationId: number = data.location;
 
         return this.database.sequelize.transaction( (t1) => {
@@ -79,11 +119,10 @@ export class LocationController
                     activity.save();
                 }
             }).then(() => {
-                return this.getLookupTable(userId).then(lookuptable => {
-                    return {
-                        data: { lookuptable },
-                        message: new Message(SUCCESS_OK, 'Location Registered successfully')
-                    };
+                return this.database.user.findByPk(userId).then( user => {
+                    return this.getLookupTable(user).then((locations) => {
+                        return {data: {locations}, message: new Message(SUCCESS_OK, "Activity updated successfully")};
+                    });
                 });
             });
         });
@@ -91,48 +130,24 @@ export class LocationController
 
     public updateLocationLike(data: any): any
     {
-        const user: number = data.user;
+        const userId: number = data.user;
         const location: number = data.location;
         const like: boolean = data.like;
 
         return this.database.sequelize.transaction( (t1) => {
             return this.database.activity.update({liked: like}, {
                 where: {
-                    userId: user,
+                    userId: userId,
                     locationId: location
                 }
             }).then(() => {
-                return this.getLookupTable(user).then((locations) => {
-                    return {data: {locations}, message: new Message(SUCCESS_OK, "Activity updated successfully")};
+                return this.database.user.findByPk(userId).then( user => {
+                    return this.getLookupTable(user).then((locations) => {
+                        return {data: {locations}, message: new Message(SUCCESS_OK, "Activity updated successfully")};
+                    });
                 });
             }).catch(() => {
                 return {data: null, message: new Message(LOCATION_NOT_UPDATED, 'Could not update activity')};
-            });
-        });
-    }
-
-    private getLookupTable(user: number): any
-    {
-        return this.database.location.findAll().then( (locations) =>
-        {
-            return this.database.activity.findAll({where: {userId: user}}).then( (activities) =>
-            {
-                for(let loc of locations)
-                {
-                    // default values must be set if no activity exists yet
-                    loc.dataValues.liked = false;
-                    loc.dataValues.locked = true;
-                    for(let act of activities)
-                    {
-                        if(loc.id === act.locationId)
-                        {
-                            loc.dataValues.liked = act.liked;
-                            loc.dataValues.locked = act.locked;
-                        }
-                    }
-                }
-
-                return locations;
             });
         });
     }

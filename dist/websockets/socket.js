@@ -153,9 +153,13 @@ class WebSocket {
                 });
             });
             socket.on('checkWifiSSID', (ssid) => {
-                console.log("Received SSID: " + ssid);
                 const result = this.configController.isWifiSSIDMatching(ssid);
                 socket.emit('checkWifiSSIDResult', result);
+            });
+            socket.on('updateUserLanguage', (data) => {
+                this.odController.updateUserLanguage(data).then(result => {
+                    socket.emit('updateUserLanguageResult', result);
+                });
             });
         });
     }

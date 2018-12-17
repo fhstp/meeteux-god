@@ -146,7 +146,7 @@ export class WebSocket
             {
                 this.odController.registerGuest(data).then( (result) =>
                 {
-                    const user = result.data.user
+                    const user = result.data.user;
                     const locations = result.data.locations;
 
                     // Generate token
@@ -233,10 +233,17 @@ export class WebSocket
 
             socket.on('checkWifiSSID', (ssid) =>
             {
-                console.log("Received SSID: " + ssid);
                 const result = this.configController.isWifiSSIDMatching(ssid);
                 socket.emit('checkWifiSSIDResult', result)
             });
+
+            socket.on('updateUserLanguage', (data) =>
+            {
+                this.odController.updateUserLanguage(data).then(result =>
+                {
+                    socket.emit('updateUserLanguageResult',result);
+                })
+            })
         });
     }
 
