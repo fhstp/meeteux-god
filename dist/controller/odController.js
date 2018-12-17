@@ -63,7 +63,7 @@ class OdController {
                 contentLanguageId: language
             }).then((user) => {
                 return this.getLookupTable(user).then((locations) => {
-                    console.log(user);
+                    // console.log(user);
                     return {
                         data: { user, locations },
                         message: new messages_1.Message(messages_1.SUCCESS_CREATED, "User created successfully")

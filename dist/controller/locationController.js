@@ -32,7 +32,6 @@ class LocationController {
                         if (loc.id === act.locationId) {
                             loc.dataValues.liked = act.liked;
                             loc.dataValues.locked = act.locked;
-                            console.log(loc.dataValues);
                         }
                     }
                 }

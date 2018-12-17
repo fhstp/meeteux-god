@@ -50,7 +50,6 @@ export class LocationController
                         {
                             loc.dataValues.liked = act.liked;
                             loc.dataValues.locked = act.locked;
-                            console.log(loc.dataValues);
                         }
                     }
                 }

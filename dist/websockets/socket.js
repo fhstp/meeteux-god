@@ -108,6 +108,7 @@ class WebSocket {
                 });
             });
             socket.on('deleteOD', (data) => {
+                console.log('deleteOD');
                 this.odController.deleteOD(data);
             });
             socket.on('registerLocation', (data) => {
@@ -121,7 +122,7 @@ class WebSocket {
                     socket.emit('registerTimelineUpdateResult', message);
                 });
             });
-            socket.on('updateLocationLike', (data) => {
+            socket.on('registerLocationLike', (data) => {
                 this.locationController.updateLocationLike(data).then((message) => {
                     socket.emit('registerLocationLikeResult', message);
                 });
@@ -164,9 +165,10 @@ class WebSocket {
                     socket.emit('updateUserLanguageResult', result);
                 });
             });
-            socket.on('updateUserData', (data) => {
+            socket.on('changeODCredentials', (data) => {
+                console.log('changeODCredentials');
                 this.odController.updateUserData(data).then(result => {
-                    socket.emit('updateUserDataResult', result);
+                    socket.emit('changeODCredentials', result);
                 });
             });
         });
