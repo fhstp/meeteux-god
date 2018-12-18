@@ -199,7 +199,8 @@ export class OdController {
 
     public updateUserData(data)
     {
-        const id = data.user;
+        console.log(data);
+        const id = data.id;
         const username = data.username;
         const email = data.email;
         const password = data.password;
@@ -217,7 +218,7 @@ export class OdController {
                 user.email = email;
 
             if(password && password === user.password && newPassword && newPassword !== user.password && newPassword !== '')
-                user.password = password;
+                user.password = newPassword;
 
             user.save();
 

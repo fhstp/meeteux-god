@@ -79,26 +79,26 @@ class Connection {
             }
         });
         //_location to _locationType relation (1:n)
-        this._locationType.hasMany(this._location, { foreignKey: { allowNull: false } });
-        this._location.belongsTo(this._locationType, { foreignKey: { allowNull: false } });
+        this._locationType.hasMany(this._location, { foreignKey: { allowNull: false }, onDelete: 'cascade' });
+        this._location.belongsTo(this._locationType, { foreignKey: { allowNull: false }, onDelete: 'cascade' });
         //_location to _content relation (1:n)
-        this._content.belongsTo(this._location, { foreignKey: { allowNull: false } });
-        this._location.hasMany(this._content, { foreignKey: { allowNull: false } });
+        this._content.belongsTo(this._location, { foreignKey: { allowNull: false }, onDelete: 'cascade' });
+        this._location.hasMany(this._content, { foreignKey: { allowNull: false }, onDelete: 'cascade' });
         //_content to _contentType relation (1:n)
-        this._content.belongsTo(this._contentType, { foreignKey: { allowNull: false } });
-        this._contentType.hasMany(this._content, { foreignKey: { allowNull: false } });
+        this._content.belongsTo(this._contentType, { foreignKey: { allowNull: false }, onDelete: 'cascade' });
+        this._contentType.hasMany(this._content, { foreignKey: { allowNull: false }, onDelete: 'cascade' });
         //_content to _contentLanguage relation (1:n)
-        this._content.belongsTo(this._contentLanguage, { foreignKey: { allowNull: false } });
-        this._contentLanguage.hasMany(this._content, { foreignKey: { allowNull: false } });
+        this._content.belongsTo(this._contentLanguage, { foreignKey: { allowNull: false }, onDelete: 'cascade' });
+        this._contentLanguage.hasMany(this._content, { foreignKey: { allowNull: false }, onDelete: 'cascade' });
         //_user to _contentLanguage relation (1:n)
-        this._user.belongsTo(this._contentLanguage, { foreignKey: { allowNull: false } });
-        this._contentLanguage.hasMany(this._user, { foreignKey: { allowNull: false } });
+        this._user.belongsTo(this._contentLanguage, { foreignKey: { allowNull: false }, onDelete: 'cascade' });
+        this._contentLanguage.hasMany(this._user, { foreignKey: { allowNull: false }, onDelete: 'cascade' });
         //_location to _status relation (1:n)
-        this._status.hasMany(this._location, { foreignKey: { allowNull: false } });
-        this._location.belongsTo(this._status, { foreignKey: { allowNull: false } });
+        this._status.hasMany(this._location, { foreignKey: { allowNull: false }, onDelete: 'cascade' });
+        this._location.belongsTo(this._status, { foreignKey: { allowNull: false }, onDelete: 'cascade' });
         //_location to _position relation (1:n)
-        this._position.hasMany(this._location, { foreignKey: { allowNull: true } });
-        this._location.belongsTo(this._position, { foreignKey: { allowNull: true } });
+        this._position.hasMany(this._location, { foreignKey: { allowNull: true }, onDelete: 'cascade' });
+        this._location.belongsTo(this._position, { foreignKey: { allowNull: true }, onDelete: 'cascade' });
     }
     initDatabaseTables() {
         this._settings = this._sequelize.define('setting', {

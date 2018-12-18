@@ -182,7 +182,8 @@ class OdController {
         });
     }
     updateUserData(data) {
-        const id = data.user;
+        console.log(data);
+        const id = data.id;
         const username = data.username;
         const email = data.email;
         const password = data.password;
@@ -195,7 +196,7 @@ class OdController {
             if (email && email !== '')
                 user.email = email;
             if (password && password === user.password && newPassword && newPassword !== user.password && newPassword !== '')
-                user.password = password;
+                user.password = newPassword;
             user.save();
             return { data: { user }, message: new messages_1.Message(messages_1.SUCCESS_UPDATED, "Updated user data successfully!") };
         }).catch(() => {
