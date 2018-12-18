@@ -106,21 +106,21 @@ export class DataFactory {
                     order: 2,
                     contentTypeId: contentTypes.IMAGE,
                     contentLanguageId: contentLanguages.ALL,
-                    locationId: 1009
+                    locationId: 1011
                 }),
                 this._connection.content.create({
-                    content: 'Willkommen beim Passive Exhibit1009!',
+                    content: 'Willkommen beim Passive Exhibit10011!',
                     order: 1,
                     contentTypeId: contentTypes.TEXT,
                     contentLanguageId: contentLanguages.GER,
-                    locationId: 1009
+                    locationId: 1011
                 }),
                 this._connection.content.create({
-                    content: 'Welcome at the passive exhibit 1009!',
+                    content: 'Welcome at the passive exhibit 1011!',
                     order: 1,
                     contentTypeId: contentTypes.TEXT,
                     contentLanguageId: contentLanguages.ENG,
-                    locationId: 1009
+                    locationId: 1011
                 })
             ]);
         });
