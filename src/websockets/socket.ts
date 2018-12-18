@@ -279,6 +279,7 @@ export class WebSocket
             case 'registerOD':
             case 'autoLoginOD':
             case 'loginOD':
+            case 'disconnectUsers':
             case 'registerODGuest':
             case 'disconnectedFromExhibit':
             case 'checkUsernameExists':
