@@ -182,7 +182,6 @@ class OdController {
         });
     }
     updateUserData(data) {
-        console.log(data);
         const id = data.id;
         const username = data.username;
         const email = data.email;
@@ -197,6 +196,27 @@ class OdController {
                 user.email = email;
             if (password && password === user.password && newPassword && newPassword !== user.password && newPassword !== '')
                 user.password = newPassword;
+            user.save();
+            return { data: { user }, message: new messages_1.Message(messages_1.SUCCESS_UPDATED, "Updated user data successfully!") };
+        }).catch(() => {
+            return { data: null, message: new messages_1.Message(odTypes_1.OD_NOT_UPDATED, "Could not update user data!") };
+        });
+    }
+    makeToRealUser(data) {
+        const id = data.id;
+        const username = data.username;
+        const email = data.email;
+        const password = data.password;
+        return this.database.user.findByPk(id).then(user => {
+            if (!user)
+                throw new Error('User not found');
+            if (username && username !== '')
+                user.name = username;
+            if (email && email !== '')
+                user.email = email;
+            if (password && password !== '')
+                user.password = password;
+            user.isGuest = false;
             user.save();
             return { data: { user }, message: new messages_1.Message(messages_1.SUCCESS_UPDATED, "Updated user data successfully!") };
         }).catch(() => {

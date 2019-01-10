@@ -253,11 +253,18 @@ export class WebSocket
 
             socket.on('changeODCredentials', (data) =>
             {
-                console.log('changeODCredentials');
                 this.odController.updateUserData(data).then(result =>
                 {
                     socket.emit('changeODCredentials',result);
                 })
+            });
+
+            socket.on('makeToRealUser', (data) =>
+            {
+                this.odController.makeToRealUser(data).then(result =>
+                {
+                    socket.emit('makeToRealUserResult', result);
+                });
             });
         });
     }

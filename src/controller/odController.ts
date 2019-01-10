@@ -199,7 +199,6 @@ export class OdController {
 
     public updateUserData(data)
     {
-        console.log(data);
         const id = data.id;
         const username = data.username;
         const email = data.email;
@@ -219,6 +218,37 @@ export class OdController {
 
             if(password && password === user.password && newPassword && newPassword !== user.password && newPassword !== '')
                 user.password = newPassword;
+
+            user.save();
+
+            return {data: {user}, message: new Message(SUCCESS_UPDATED, "Updated user data successfully!")};
+        }).catch(() => {
+            return {data: null, message: new Message(OD_NOT_UPDATED, "Could not update user data!")}
+        });
+    }
+
+    public makeToRealUser(data: any): any
+    {
+        const id = data.id;
+        const username = data.username;
+        const email = data.email;
+        const password = data.password;
+
+        return this.database.user.findByPk(id).then(user =>
+        {
+            if (!user)
+                throw new Error('User not found');
+
+            if(username && username !== '')
+                user.name = username;
+
+            if(email && email !== '')
+                user.email = email;
+
+            if(password && password !== '')
+                user.password = password;
+
+            user.isGuest = false;
 
             user.save();
 
