@@ -263,6 +263,15 @@ export class WebSocket
             {
                 this.odController.makeToRealUser(data).then(result =>
                 {
+                    const user = result.data.user;
+
+                    // Generate token
+                    const token = jwt.sign({user}, process.env.SECRET);
+
+                    // Add token to result and to the socket connection
+                    result.data = {token, user};
+                    socket.token = token;
+                    
                     socket.emit('makeToRealUserResult', result);
                 });
             });
