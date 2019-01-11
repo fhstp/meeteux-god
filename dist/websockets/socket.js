@@ -85,13 +85,15 @@ class WebSocket {
             });
             socket.on('loginOD', (data) => {
                 this.odController.loginUser(data).then((result) => {
-                    const user = result.data.user;
-                    const locations = result.data.locations;
-                    // Generate token
-                    const token = jwt.sign({ user }, process.env.SECRET);
-                    // Add token to result and to the socket connection
-                    result.data = { token, user, locations };
-                    socket.token = token;
+                    if (result.data) {
+                        const user = result.data.user;
+                        const locations = result.data.locations;
+                        // Generate token
+                        const token = jwt.sign({ user }, process.env.SECRET);
+                        // Add token to result and to the socket connection
+                        result.data = { token, user, locations };
+                        socket.token = token;
+                    }
                     socket.emit('loginODResult', result);
                 });
             });

@@ -128,15 +128,18 @@ export class WebSocket
             {
                 this.odController.loginUser(data).then( (result) =>
                 {
-                    const user = result.data.user;
-                    const locations = result.data.locations;
+                    if(result.data)
+                    {
+                        const user = result.data.user;
+                        const locations = result.data.locations;
 
-                    // Generate token
-                    const token = jwt.sign({user}, process.env.SECRET);
+                        // Generate token
+                        const token = jwt.sign({user}, process.env.SECRET);
 
-                    // Add token to result and to the socket connection
-                    result.data = {token, user, locations};
-                    socket.token = token;
+                        // Add token to result and to the socket connection
+                        result.data = {token, user, locations};
+                        socket.token = token;
+                    }
 
                     socket.emit('loginODResult', result);
                 });
@@ -271,7 +274,7 @@ export class WebSocket
                     // Add token to result and to the socket connection
                     result.data = {token, user};
                     socket.token = token;
-                    
+
                     socket.emit('makeToRealUserResult', result);
                 });
             });
