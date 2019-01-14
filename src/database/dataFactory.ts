@@ -20,13 +20,14 @@ export class DataFactory {
         await this.createLocationTypes();
         await this.createStatusTypes();
         await this.createRoomLocations();
+        await this.createDoorLocations();
         await this.createPassiveLocations();
         await this.createActiveExhibitLocation();
         await this.createActiveExhibitBehaviorLocation();
 
         await this.createContentTypes();
         await this.createContentLanguages();
-        await this.createExhibitContent();
+        // await this.createExhibitContent();
     }
 
     private initSettings(): void {
@@ -130,12 +131,111 @@ export class DataFactory {
         return this._connection.sequelize.transaction(t1 => {
             return Promise.all([
                 this._connection.location.create({
-                    id: 10,
-                    description: 'Büro',
+                    id: 1,
+                    description: 'Klosterneuburg',
                     locationTypeId: 1,
                     statusId: 1,
+                    ipAddress: '0.0.0.0'
+                }),
+                this._connection.location.create({
+                    id: 10,
+                    description: 'Section (10): introduction',
+                    locationTypeId: 1,
+                    statusId: 1,
+                    parentId: 1,
+                    ipAddress: '0.0.0.0'
+                }),
+                this._connection.location.create({
+                    id: 20,
+                    description: 'Section (20): canonization and conflicts',
+                    locationTypeId: 1,
+                    statusId: 1,
+                    parentId: 1,
+                    ipAddress: '0.0.0.0'
+                }),
+                this._connection.location.create({
+                    id: 30,
+                    description: 'Section (30): maximilian',
+                    locationTypeId: 1,
+                    statusId: 1,
+                    parentId: 1,
+                    ipAddress: '0.0.0.0'
+                }),
+                this._connection.location.create({
+                    id: 40,
+                    description: 'Section (40): Klosterneuburg legend',
+                    locationTypeId: 1,
+                    statusId: 1,
+                    parentId: 1,
+                    ipAddress: '0.0.0.0'
+                }),
+                this._connection.location.create({
+                    id: 50,
+                    description: 'Section (50): translation',
+                    locationTypeId: 1,
+                    statusId: 1,
+                    parentId: 1,
+                    ipAddress: '0.0.0.0'
+                }),
+                this._connection.location.create({
+                    id: 60,
+                    description: 'Section (60): death',
+                    locationTypeId: 1,
+                    statusId: 1,
+                    parentId: 1,
+                    ipAddress: '0.0.0.0'
+                })
+            ]);
+        });
+    }
+
+    private async createDoorLocations() {
+        return this._connection.sequelize.transaction(t1 => {
+            return Promise.all([
+                this._connection.location.create({
+                    id: 1000,
+                    description: 'Intro to section 1:',
+                    locationTypeId: 5,
+                    statusId: 1,
+                    parentId: 10,
                     ipAddress: '0.0.0.0',
-                    isStartPoint: true
+                    showInTimeline: true
+                }),
+                this._connection.location.create({
+                    id: 2000,
+                    description: 'Intro to section 2:',
+                    locationTypeId: 5,
+                    statusId: 1,
+                    parentId: 20,
+                    ipAddress: '0.0.0.0',
+                    showInTimeline: true
+                }),
+                this._connection.location.create({
+                    id: 3000,
+                    description: 'Intro to section 3:',
+                    locationTypeId: 5,
+                    statusId: 1,
+                    parentId: 30,
+                    ipAddress: '0.0.0.0',
+                    showInTimeline: true
+                }),
+                this._connection.location.create({
+                    id: 4000,
+                    description: 'Intro to section 4:',
+                    locationTypeId: 5,
+                    statusId: 1,
+                    parentId: 40,
+                    ipAddress: '0.0.0.0',
+                    showInTimeline: true
+                }),
+                this._connection.location.create({
+                    id: 5000,
+                    description: 'Intro to section 7:',
+                    locationTypeId: 5,
+                    statusId: 1,
+                    parentId: 10,
+                    ipAddress: '0.0.0.0',
+                    showInTimeline: true
                 })
             ]);
         });
@@ -145,11 +245,11 @@ export class DataFactory {
         return this._connection.sequelize.transaction(t1 => {
             return Promise.all([
                 this._connection.location.create({
-                    id: 100,
+                    id: 101,
                     parentId: 10,
-                    description: 'Table1 atExhibit',
+                    description: 'Active exhibit',
                     contentURL: 'tableat',
-                    ipAddress: '192.168.178.253',
+                    ipAddress: '0.0.0.0',
                     locationTypeId: 3,
                     contentTypeId: 1,
                     statusId: 2,
@@ -158,45 +258,31 @@ export class DataFactory {
                     showInTimeline: true
                 }),
                 this._connection.location.create({
-                    id: 1000,
-                    description: 'Table1 onExhibit-1',
-                    parentId: 100,
-                    contentURL: 'tableon',
+                    id: 102,
+                    parentId: 10,
+                    description: 'Active exhibit',
+                    contentURL: 'tableat',
                     ipAddress: '0.0.0.0',
-                    locationTypeId: 2,
+                    locationTypeId: 3,
                     contentTypeId: 1,
-                    statusId: 2
+                    statusId: 2,
+                    currentSeat: 0,
+                    maxSeat: 4,
+                    showInTimeline: true
                 }),
                 this._connection.location.create({
-                    id: 1001,
-                    description: 'Table1 onExhibit-2',
-                    parentId: 100,
-                    contentURL: 'tableon',
+                    id: 401,
+                    parentId: 40,
+                    description: 'Active exhibit',
+                    contentURL: 'tableat',
                     ipAddress: '0.0.0.0',
-                    locationTypeId: 2,
+                    locationTypeId: 3,
                     contentTypeId: 1,
-                    statusId: 2
+                    statusId: 2,
+                    currentSeat: 0,
+                    maxSeat: 4,
+                    showInTimeline: true
                 }),
-                this._connection.location.create({
-                    id: 1002,
-                    description: 'Table1 onExhibit-3',
-                    parentId: 100,
-                    contentURL: 'tableon',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 2,
-                    contentTypeId: 1,
-                    statusId: 2
-                }),
-                this._connection.location.create({
-                    id: 1003,
-                    description: 'Table1 onExhibit-4',
-                    parentId: 100,
-                    contentURL: 'tableon',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 2,
-                    contentTypeId: 1,
-                    statusId: 2
-                })
             ]);
         });
     }
@@ -205,9 +291,9 @@ export class DataFactory {
         return this._connection.sequelize.transaction(t1 => {
             return Promise.all([
                 this._connection.location.create({
-                    id: 101,
-                    parentId: 10,
-                    description: 'Table2 atExhibitBehavior',
+                    id: 301,
+                    parentId: 30,
+                    description: 'activeExhibitBehaviorAt',
                     contentURL: 'tableat',
                     ipAddress: '192.168.178.252',
                     locationTypeId: 6,
@@ -218,9 +304,65 @@ export class DataFactory {
                     showInTimeline: true
                 }),
                 this._connection.location.create({
-                    id: 1013,
-                    description: 'Table2 onExhibitBehavior',
-                    parentId: 101,
+                    id: 3011,
+                    description: 'activeExhibitBehaviorOn',
+                    parentId: 301,
+                    contentURL: 'tableon',
+                    ipAddress: '0.0.0.0',
+                    locationTypeId: 7,
+                    contentTypeId: 1,
+                    statusId: 2
+                }),
+                this._connection.location.create({
+                    id: 402,
+                    parentId: 40,
+                    description: 'activeExhibitBehaviorAt',
+                    contentURL: 'tableat',
+                    ipAddress: '192.168.178.252',
+                    locationTypeId: 6,
+                    contentTypeId: 1,
+                    statusId: 2,
+                    currentSeat: 0,
+                    maxSeat: 15,
+                    showInTimeline: true
+                }),
+                this._connection.location.create({
+                    id: 4021,
+                    description: 'activeExhibitBehaviorOn',
+                    parentId: 301,
+                    contentURL: 'tableon',
+                    ipAddress: '0.0.0.0',
+                    locationTypeId: 7,
+                    contentTypeId: 1,
+                    statusId: 2
+                }),
+                this._connection.location.create({
+                    id: 502,
+                    parentId: 50,
+                    description: 'activeExhibitBehaviorAt',
+                    contentURL: 'tableat',
+                    ipAddress: '192.168.178.252',
+                    locationTypeId: 6,
+                    contentTypeId: 1,
+                    statusId: 2,
+                    currentSeat: 0,
+                    maxSeat: 15,
+                    showInTimeline: true
+                }),
+                this._connection.location.create({
+                    id: 5021,
+                    description: 'activeExhibitBehaviorOn',
+                    parentId: 502,
+                    contentURL: 'tableon',
+                    ipAddress: '0.0.0.0',
+                    locationTypeId: 7,
+                    contentTypeId: 1,
+                    statusId: 2
+                }),
+                this._connection.location.create({
+                    id: 5022,
+                    description: 'activeExhibitBehaviorOn',
+                    parentId: 502,
                     contentURL: 'tableon',
                     ipAddress: '0.0.0.0',
                     locationTypeId: 7,
@@ -235,9 +377,9 @@ export class DataFactory {
         return this._connection.sequelize.transaction(t1 => {
             return Promise.all([
                 this._connection.location.create({
-                    id: 1004,
-                    parentId: 10,
-                    description: 'passive Exhibit1',
+                    id: 2001,
+                    parentId: 20,
+                    description: 'passive exhibit',
                     contentURL: 'passive',
                     ipAddress: '0.0.0.0',
                     locationTypeId: 4,
@@ -246,9 +388,9 @@ export class DataFactory {
                     showInTimeline: true
                 }),
                 this._connection.location.create({
-                    id: 1005,
-                    parentId: 10,
-                    description: 'passive Exhibit2',
+                    id: 2002,
+                    parentId: 20,
+                    description: 'passive exhibit',
                     contentURL: 'passive',
                     ipAddress: '0.0.0.0',
                     locationTypeId: 4,
@@ -257,9 +399,9 @@ export class DataFactory {
                     showInTimeline: true
                 }),
                 this._connection.location.create({
-                    id: 1006,
-                    parentId: 10,
-                    description: 'passive Exhibit3',
+                    id: 2003,
+                    parentId: 20,
+                    description: 'passive exhibit',
                     contentURL: 'passive',
                     ipAddress: '0.0.0.0',
                     locationTypeId: 4,
@@ -268,9 +410,9 @@ export class DataFactory {
                     showInTimeline: true
                 }),
                 this._connection.location.create({
-                    id: 1007,
-                    parentId: 10,
-                    description: 'passive Exhibit4',
+                    id: 2004,
+                    parentId: 20,
+                    description: 'passive exhibit',
                     contentURL: 'passive',
                     ipAddress: '0.0.0.0',
                     locationTypeId: 4,
@@ -279,9 +421,9 @@ export class DataFactory {
                     showInTimeline: true
                 }),
                 this._connection.location.create({
-                    id: 1008,
-                    parentId: 10,
-                    description: 'passive Exhibit5',
+                    id: 4001,
+                    parentId: 40,
+                    description: 'passive exhibit',
                     contentURL: 'passive',
                     ipAddress: '0.0.0.0',
                     locationTypeId: 4,
@@ -290,9 +432,9 @@ export class DataFactory {
                     showInTimeline: true
                 }),
                 this._connection.location.create({
-                    id: 1009,
-                    parentId: 10,
-                    description: 'passive Exhibit6',
+                    id: 4002,
+                    parentId: 40,
+                    description: 'passive exhibit',
                     contentURL: 'passive',
                     ipAddress: '0.0.0.0',
                     locationTypeId: 4,
@@ -301,9 +443,9 @@ export class DataFactory {
                     showInTimeline: true
                 }),
                 this._connection.location.create({
-                    id: 1010,
-                    parentId: 10,
-                    description: 'passive Exhibit7',
+                    id: 5001,
+                    parentId: 50,
+                    description: 'passive exhibit',
                     contentURL: 'passive',
                     ipAddress: '0.0.0.0',
                     locationTypeId: 4,
@@ -312,20 +454,9 @@ export class DataFactory {
                     showInTimeline: true
                 }),
                 this._connection.location.create({
-                    id: 1011,
-                    parentId: 10,
-                    description: 'passive Exhibit8',
-                    contentURL: 'passive',
-                    ipAddress: '0.0.0.0',
-                    locationTypeId: 4,
-                    contentTypeId: 1,
-                    statusId: 1,
-                    showInTimeline: true
-                }),
-                this._connection.location.create({
-                    id: 1012,
-                    parentId: 10,
-                    description: 'passive Exhibit9',
+                    id: 6001,
+                    parentId: 60,
+                    description: 'passive exhibit',
                     contentURL: 'passive',
                     ipAddress: '0.0.0.0',
                     locationTypeId: 4,
