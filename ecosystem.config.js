@@ -1,7 +1,7 @@
 module.exports = {
     apps: [
         {
-            name:"MEETeUX-GoD",
+            name:"Max-GoD",
             script: "dist/index.js",
             env_production: {
                 NODE_ENV: 'production'
