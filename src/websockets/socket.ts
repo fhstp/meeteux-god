@@ -1,7 +1,7 @@
 import * as IO from 'socket.io';
 import * as jwt from 'jsonwebtoken';
 import  { Connection } from '../database';
-import { OdController, LocationController } from "../controller";
+import {OdController, LocationController, ConfigController} from "../controller";
 import {ExhibitController} from "../controller/exhibitController";
 import {LOCATION_NOT_FOUND, Message} from "../messages";
 import {INVALID_TOKEN} from "../messages/authenticationTypes";
@@ -13,6 +13,7 @@ export class WebSocket
     private odController: OdController;
     private locationController: LocationController;
     private exhibitController: ExhibitController;
+    private configController: ConfigController;
 
     constructor(server: any)
     {
@@ -20,6 +21,7 @@ export class WebSocket
         this.odController = new OdController();
         this.locationController = new LocationController();
         this.exhibitController = new ExhibitController();
+        this.configController = new ConfigController();
         this.database = Connection.getInstance();
 
         this.attachListeners();
@@ -34,7 +36,7 @@ export class WebSocket
                 const event: String = packet[0];
                 const token = socket.token;
 
-                if(event.localeCompare('registerOD') !== 0 && event.localeCompare('autoLoginOD') !== 0 && event.localeCompare('registerODGuest') !== 0 && event.localeCompare('disconnectedFromExhibit') !== 0 && event.localeCompare('loginExhibit') !== 0)
+                if(this.checkEventsTokenNeeded(event))
                 {
                     jwt.verify(token, process.env.SECRET, (err, decoded) =>
                     {
@@ -126,15 +128,18 @@ export class WebSocket
             {
                 this.odController.loginUser(data).then( (result) =>
                 {
-                    const user = result.data.user;
-                    const locations = result.data.locations;
+                    if(result.data)
+                    {
+                        const user = result.data.user;
+                        const locations = result.data.locations;
 
-                    // Generate token
-                    const token = jwt.sign({user}, process.env.SECRET);
+                        // Generate token
+                        const token = jwt.sign({user}, process.env.SECRET);
 
-                    // Add token to result and to the socket connection
-                    result.data = {token, user, locations};
-                    socket.token = token;
+                        // Add token to result and to the socket connection
+                        result.data = {token, user, locations};
+                        socket.token = token;
+                    }
 
                     socket.emit('loginODResult', result);
                 });
@@ -144,7 +149,7 @@ export class WebSocket
             {
                 this.odController.registerGuest(data).then( (result) =>
                 {
-                    const user = result.data.user
+                    const user = result.data.user;
                     const locations = result.data.locations;
 
                     // Generate token
@@ -158,6 +163,12 @@ export class WebSocket
                 });
             });
 
+            socket.on('deleteOD', (data) =>
+            {
+                console.log('deleteOD');
+                this.odController.deleteOD(data);
+            });
+
             socket.on('registerLocation', (data) =>
             {
                 // console.log("register location: " + data.location + ", " + data.user);
@@ -167,9 +178,17 @@ export class WebSocket
                 });
             });
 
+            socket.on('registerTimelineUpdate', (data) =>
+            {
+                this.locationController.registerTimelineUpdate(data).then( (message) =>
+                {
+                    socket.emit('registerTimelineUpdateResult', message);
+                });
+            });
+
             socket.on('registerLocationLike', (data) =>
             {
-                this.locationController.registerLocationLike(data).then( (message) =>
+                this.locationController.updateLocationLike(data).then( (message) =>
                 {
                     socket.emit('registerLocationLikeResult', message);
                 });
@@ -197,11 +216,66 @@ export class WebSocket
                });
             });
 
+            socket.on('checkUsernameExists', (name) =>
+            {
+               this.odController.checkUserNameExists(name).then(exists =>
+               {
+                   socket.emit('checkUsernameExistsResult', exists);
+               });
+            });
+
+            socket.on('checkEmailExists', (mail) =>
+            {
+                this.odController.checkEmailExists(mail).then(exists =>
+                {
+                    socket.emit('checkEmailExistsResult', exists);
+                });
+            });
+
             socket.on('loginExhibit', (ipAddress) =>
             {
                 this.exhibitController.loginExhibit(ipAddress).then( (message) =>
                 {
                     socket.emit('loginExhibitResult', message);
+                });
+            });
+
+            socket.on('checkWifiSSID', (ssid) =>
+            {
+                const result = this.configController.isWifiSSIDMatching(ssid);
+                socket.emit('checkWifiSSIDResult', result)
+            });
+
+            socket.on('updateUserLanguage', (data) =>
+            {
+                this.odController.updateUserLanguage(data).then(result =>
+                {
+                    socket.emit('updateUserLanguageResult',result);
+                })
+            });
+
+            socket.on('changeODCredentials', (data) =>
+            {
+                this.odController.updateUserData(data).then(result =>
+                {
+                    socket.emit('changeODCredentials',result);
+                })
+            });
+
+            socket.on('makeToRealUser', (data) =>
+            {
+                this.odController.makeToRealUser(data).then(result =>
+                {
+                    const user = result.data.user;
+
+                    // Generate token
+                    const token = jwt.sign({user}, process.env.SECRET);
+
+                    // Add token to result and to the socket connection
+                    result.data = {token, user};
+                    socket.token = token;
+
+                    socket.emit('makeToRealUserResult', result);
                 });
             });
         });
@@ -214,5 +288,25 @@ export class WebSocket
         // TODO: Check with restricted events
 
         return ok;
+    }
+
+    private checkEventsTokenNeeded(event: String): boolean
+    {
+        let needed = true;
+        switch (event)
+        {
+            case 'registerOD':
+            case 'autoLoginOD':
+            case 'loginOD':
+            case 'disconnectUsers':
+            case 'registerODGuest':
+            case 'disconnectedFromExhibit':
+            case 'checkUsernameExists':
+            case 'checkEmailExists':
+            case 'loginExhibit':
+                needed = false;
+                break;
+        }
+        return needed;
     }
 }

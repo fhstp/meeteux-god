@@ -1,6 +1,6 @@
 {
   "name": "meeteux-god",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MEETeUX",
   "main": "dir/index",
   "types": "dir/index",
@@ -21,18 +21,21 @@
   },
   "homepage": "https://github.com/fhstp/meeteux-god#readme",
   "devDependencies": {
-    "@types/node": "^8.9.5",
-    "nodemon": "^1.18.3",
+    "@types/node": "^8.10.37",
+    "@types/sequelize": "^4.27.30",
+    "nodemon": "^1.18.5",
     "ts-node": "^3.3.0",
-    "typescript": "^2.7.2",
+    "typescript": "^2.9.2",
     "typescript-eslint-parser": "^6.0.1"
   },
   "dependencies": {
+    "continuation-local-storage": "^3.2.1",
     "dotenv": "^4.0.0",
-    "express": "^4.15.4",
-    "jsonwebtoken": "^8.2.0",
-    "mysql2": "^1.5.2",
-    "sequelize": "^4.36.0",
-    "socket.io": "^2.1.1"
+    "express": "^4.16.4",
+    "jsonwebtoken": "^8.3.0",
+    "mysql2": "^1.6.1",
+    "sequelize": "^4.41.0",
+    "socket.io": "^2.1.1",
+    "winston": "^3.1.0"
   }
 }
