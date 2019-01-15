@@ -5,8 +5,6 @@ import  { WebSocket } from '../websockets';
 import Logger from './logger';
 require('dotenv').config();
 
-//import * as http from 'http';
-
 export default class Server
 {
     private server: any;
@@ -21,6 +19,7 @@ export default class Server
 
         this.app = new Express();
         this.server = https.createServer(cred, this.app);
+        //this.server = https.createServer(cred, this.app);
         this.socket = new WebSocket(this.server);
 
         this.server.listen(process.env.SERVER_PORT, () => {
