@@ -1,11 +1,9 @@
 import * as Express from 'express';
 import * as fs from 'fs';
-import * as http from 'http';
+import * as https from 'https';
 import  { WebSocket } from '../websockets';
 import Logger from './logger';
 require('dotenv').config();
-
-//import * as http from 'http';
 
 export default class Server
 {
@@ -20,7 +18,7 @@ export default class Server
         const cred = this.loadCredentials();
 
         this.app = new Express();
-        this.server = http.createServer(this.app);
+        this.server = https.createServer(cred, this.app);
         //this.server = https.createServer(cred, this.app);
         this.socket = new WebSocket(this.server);
 
