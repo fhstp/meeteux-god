@@ -159,7 +159,7 @@ export class WebSocket
                     result.data = {token, user, locations};
                     socket.token = token;
 
-                    socket.emit('registerODResult', result);
+                    socket.emit('registerODGuestResult', result);
                 });
             });
 
