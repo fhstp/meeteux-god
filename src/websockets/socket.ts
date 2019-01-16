@@ -159,7 +159,7 @@ export class WebSocket
                     result.data = {token, user, locations};
                     socket.token = token;
 
-                    socket.emit('registerODResult', result);
+                    socket.emit('registerODGuestResult', result);
                 });
             });
 
@@ -229,6 +229,14 @@ export class WebSocket
                 this.odController.checkEmailExists(mail).then(exists =>
                 {
                     socket.emit('checkEmailExistsResult', exists);
+                });
+            });
+
+            socket.on('checkNameOrEmailExists', (data) =>
+            {
+                this.odController.checkNameOrEmailExists(data).then(result =>
+                {
+                    socket.emit('checkNameOrEmailExistsResult', result);
                 });
             });
 
@@ -312,6 +320,7 @@ export class WebSocket
             case 'disconnectedFromExhibit':
             case 'checkUsernameExists':
             case 'checkEmailExists':
+            case 'checkNameOrEmailExists':
             case 'loginExhibit':
                 needed = false;
                 break;
