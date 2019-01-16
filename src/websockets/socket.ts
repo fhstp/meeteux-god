@@ -232,6 +232,14 @@ export class WebSocket
                 });
             });
 
+            socket.on('checkNameOrEmailExists', (data) =>
+            {
+                this.odController.checkNameOrEmailExists(data).then(result =>
+                {
+                    socket.emit('checkNameOrEmailExistsResult', result);
+                });
+            });
+
             socket.on('loginExhibit', (ipAddress) =>
             {
                 this.exhibitController.loginExhibit(ipAddress).then( (message) =>
@@ -312,6 +320,7 @@ export class WebSocket
             case 'disconnectedFromExhibit':
             case 'checkUsernameExists':
             case 'checkEmailExists':
+            case 'checkNameOrEmailExists':
             case 'loginExhibit':
                 needed = false;
                 break;

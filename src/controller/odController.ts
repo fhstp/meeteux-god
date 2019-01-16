@@ -263,7 +263,7 @@ export class OdController {
         this.database.user.destroy({where: {id: userId}});
     }
 
-    public checkUserNameExists(name: String): any {
+    public async checkUserNameExists(name: String): Promise<boolean> {
         return this.database.user.count({where: {name: name}}).then(count => {
             return count != 0;
         });
@@ -272,6 +272,16 @@ export class OdController {
     public checkEmailExists(email: String): any {
         return this.database.user.count({where: {email}}).then(count => {
             return count != 0;
+        });
+    }
+
+    public checkNameOrEmailExists(data): any {
+        let nameExists = this.checkUserNameExists(data.name);
+        let mailExists = this.checkEmailExists(data.email);
+
+        return Promise.all([nameExists, mailExists]).then(values =>
+        {
+            return {name: values[0], email: values[1]};
         });
     }
 }
